@@ -1,0 +1,15 @@
+# ansible/roles/dockerlab/defaults/main.yml
+#
+# Default values for role variables
+---
+
+# Subnet IP for the Docker network `mgmt_net` all "permanent" containers for
+# monitoring will be attached to.
+dockerlab_subnet: "172.30.0.0/16"
+
+# IP address of the Docker host system in this network
+dockerlab_ip: "172.30.0.1"
+
+# Names of persistent data volumes to be created
+dockerlab_volumes:
+  - portainer_data
