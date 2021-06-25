@@ -1,7 +1,7 @@
 # Infrastructure Automation - Lab assignments
 
 - Student name: NAME
-- Repository URL: <https://github.com/HoGenmtTIN/USERNAME/REPO>
+- Repository URL: <https://github.com/HoGentTIN/USERNAME/REPO>
 
 This repository contains the lab assignments for the course Infrastructure Automation, which is part of the B[achelor Applied Computer Science programme](https://www.hogent.be/opleidingen/bachelors/toegepaste-informatica/) at [HOGENT](https://www.hogent.be/).
 
