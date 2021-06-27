@@ -179,3 +179,11 @@ What's the forwarded port for the `helloapp` container? There's several ways to 
 ## 1.6 Volumes and networks
 
 ## 1.7 Docker compose
+
+## Acceptance criteria
+
+- Show volumes, images, and containers present on the `dockerlab` VM, both in Portainer and on the command line.
+- Show that you are able to launch a detached container, query its IP address and open a shell.
+- Show that the `helloapp` container is running by opening it in a web browser.
+- TODO
+- Show your lab report and cheat sheet! Your report should contain screenshots of intermediate milestones and console output (using Markdown fenced code blocks!) of commands you used. Your cheat sheet should contain an overview of the most important commands that you used to finish this assignment.
