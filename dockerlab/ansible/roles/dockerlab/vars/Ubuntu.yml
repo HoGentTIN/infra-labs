@@ -11,7 +11,7 @@ dockerlab_packages:
   - docker-compose
   - git
   - jq
-  - mariadb-client
+  - mysql-client
   - python3-pip
   - silversearcher-ag
   - tree
