@@ -1,14 +1,16 @@
 # Lab 1: Container virtualization
 
-In this lab assignment, you'll explore the basic operation of Docker containers. The assignment contains step-by-step instructions that will help you building insight in how Docker works. Remark that you won't be a Docker expert after finishing the assignment. You may not understand everything that's going on the first time you try it. Carefully examine any output, and if necessary, 
+In this lab assignment, you'll explore the basic operation of Docker containers. The assignment contains step-by-step instructions that will help you building insight in how Docker works. Remark that you won't be a Docker expert after finishing the assignment. You may not understand everything that's going on the first time you try it. Carefully examine any output to see what happens and how everything works.
 
-Therefore, it is important to keep a detailed lab report. Write a complete transcript of the commands that you execute, the resulting output in the terminal, with screenshots when it's relevant. Don't take screenshots of terminal text! Use Markdown fenced code blocks and copy/paste the text itself.
+The [Get Started](https://docs.docker.com/get-started/) guide at the Docker documentation website is similar to this lab assignment. Going through that guide as well may be useful to gain additional insight.
+
+It is important to keep a detailed lab report, not only so you can show what you've done, but also as a reference for yourself later on. Write a complete transcript of the commands that you execute, the resulting output in the terminal, with screenshots when it's relevant. Don't take screenshots of terminal text! Use Markdown fenced code blocks and copy/paste the text itself.
 
 Add the most common commands that you need to manage Docker in your [cheat sheet](../report/cheat-sheet.md)!
 
 ## Learning goals
 
-After completing this assignment, you should have basic understanding on how to work with Docker: managing containers, container images, volumes, networks, and using Docker Compose to set up reproducible, multi-container environments.
+After completing this assignment, you should have basic understanding on how to work with Docker: managing containers, container images, volumes, and using Docker Compose to set up reproducible, multi-container environments.
 
 ## 1.1 Set up the lab environment
 
@@ -38,7 +40,9 @@ The lab environment is set up using Ansible. We're going into that specific subj
 
 ### Portainer
 
-We already pre-installed and spun up a container with [Portainer](https://www.portainer.io/), a web-ui for managing containers. Strictly speaking, Portainer is not necessary for completing the lab assignment, but it can help novice Docker users to explore the environment: container state, images, networks, etc. If the `vagrant up` command finished successfully, you can access the web UI by opening a web browser and entering URL <http://192.168.56.20:9000/>. The `dockerlab` VM can be reached from the physical system with IP address 192.168.56.20 (check this by pinging the VM!). Portainer, by default, listens on port 9000.
+We already pre-installed and spun up a container with [Portainer](https://www.portainer.io/), a web-ui for managing containers. Strictly speaking, Portainer is not necessary for completing the lab assignment, but it can help novice Docker users to explore the environment: container state, images, networks, etc. Portainer provides similar features as [Docker Desktop](https://docs.docker.com/desktop/). Docker Desktop, however, can only be run on Windows or Mac.
+
+If the `vagrant up` command finished successfully, you can access the web UI by opening a web browser and entering URL <http://192.168.56.20:9000/>. The `dockerlab` VM can be reached from the physical system with IP address 192.168.56.20 (check this by pinging the VM!). Portainer, by default, listens on port 9000.
 
 The fist time you access the Portainer web UI, you will be asked to create an admin user and password:
 
@@ -176,7 +180,14 @@ What's the forwarded port for the `helloapp` container? There's several ways to 
 
 When you stop and remove a container, all data in that container is gone. Often, it is necessary to preserve some data between consecutive instances of a container. In this section, we'll create a container with a MySQL database and we'll see how you can save the database contents even after the container was destroyed.
 
-First, fetch the official MySQL Docker image from the registry. Then,create a directory `/srv/mysql/data` in the dockerlab VM that will be used to store persistent data within the container.
+First, fetch the official MySQL Docker image from the registry. Then, create a Docker volume that will be used to store persistent data within the container:
+
+```console
+docker volume create mysql-data
+docker volume inspect mysql-data
+```
+
+The second command can be used to check where the volume contents are actually stored. What is the mount point of the volume?
 
 ### Adding a volume to a container
 
@@ -184,13 +195,13 @@ Start the MySQL container with the following command:
 
 ```console
 docker run --name db -d \
-  -v /srv/mysql/data/:/var/lib/mysql \
+  -v mysql-data:/var/lib/mysql \
   -p 3306:3306 \
   -e MYSQL_DATABASE='appdb' \
   -e MYSQL_USER='appusr' \
   -e MYSQL_PASSWORD='letmein' \
   -e MYSQL_ROOT_PASSWORD='letmein' \
-  mysql
+  mysql:5.7
 ```
 
 Note: the backslashes `\` at the end of each line indicate that the Bash command has not yet finished and continues to the next line. If you type the command you can do this on one long line, without the `\` characters.
@@ -199,10 +210,10 @@ The meaning of the options:
 
 - `--name`: name for this container (`db`)
 - `-d`: start the container in "detached" mode (in the background)
-- `-v`: creates a "volume", i.e. directory `/var/mysql/data` on the host system is mounted inside the container at the path `/var/lib/mysql`. After removing the container, data in this directory will be preserved!
+- `-v`: mount the contents of the Docker volume `mysql-data` inside the container at the path `/var/lib/mysql`. After removing the container, data in this volume will be preserved!
 - `-p`: make sure that server port 3306 in the container is also reachable via port 3306 on the host system.
 - `-e`: Initializes an environment variable with the specified value. You can find the meaning of these specific variables in the [MySQL Docker image documentation](https://hub.docker.com/_/mysql). The MySQL root password is set, and a database is created with a user who has full privileges to it.
-- `mysql` on the last line is the name of the image this container is based on.
+- `mysql:5.7` on the last line is the name of the image this container is based on.
 
 Check that you can view the logs of the MySQL container with `docker logs -f db`. You can open a separate terminal window to watch the logs throughout the next part of this lab assignment.
 
@@ -391,15 +402,46 @@ Rebuild the image (give it another name, e.g. `static-site-2`). How many layers 
 
 Make any change to the `index.html` file (e.g. change the background colour), recreate the .tar.bz2 archive and rebuild the image. Check the output of the build process. You should see that some layers can be reused from the previous image version (message "Using cache" in the output). Inspect the layers and check which ones have changed and which ones haven't.
 
-## 1.6 Volumes and networks
+## 1.6 Docker compose
 
-## 1.7 Docker compose
+A container should only have a single application running inside. Consequently, putting an entire LAMP-stack (webserver + database) in a single container is bad practice. When we want to run a dynamic webapplication with a database backend on Docker, we need at least two containers: one with the database, the other with the webserver. The webserver can only start if the database is already up and running. Environments with multiple containers and dependencies between services running on them are quite common.
+
+Docker Compose is a tool that was developed to help define and share multi-container applications. With Compose, we can create a YAML file to define the services and with a single command, can spin everything up or tear it all down.
+
+In this part of the assignment, you will use a compose file to set up a reproducible multi-container application stack.
+
+In the dockerlab VM, go to `/vagrant/labs/todo-app`. This directory contains a Node.js demo application, a todo-list, that is also used in the [Docker Get Started guide](https://docs.docker.com/get-started/). The directory also contains a Dockerfile. Use it to build an image for the application container, named `todo-app` and start it (by now, you should know how!). The application uses port 3000. Use port forwarding so you can access the application from the physical system. Check that the application is running by opening a browser window and entering the application's URL:
+
+![Demo todo application running in a container at URL https://192.168.56.20:3000/](img/1-todo-app.png)
+
+Also check the container and image in Portainer!
+
+The application is built so it can run without a database backend. Check the container's log to see how it saves data! However, when you point it to a MySQL database server, it will use that. Our goal is to set up an application stack with two containers, one for the app and the other for the database. The data stored in the database should of course be persistent.
+
+Open the `docker-compose.yml` file in the directory `dockerlab/labs/todo-app` and carefully examine the contents and comments. This file defines two containers, `app` and `db`. It also contains the instructions to build the image, that you can also find in the `Dockerfile`. Finally, a volume is defined that will be used to make the database contents persistent.
+
+Stop the currently running instance of the application container and then run the command:
+
+```console
+docker-compose up -d
+```
+
+The `-d` option will run docker-compose in the background so you can immediately use the terminal.
+
+Use portainer or the command line to inspect the containers. What are the names and IP addresses of the two containers?
+
+Remark that we don't need to know the IP address in order to communicate between containers in the same stack. The container names, as specified in the docker-compose file are configured as hostname aliases and will resolve to an IP-address inside the container. Verify this by opening a console (`/bin/sh`) inside the app container and try the following commands:
+
+```console
+ping db
+getent ahosts db
+```
+
+Note that the `getent ahosts` command can be used to test DNS name resolution on systems where the `dig` or `nslookup` commands are not available.
 
 ## Acceptance criteria
 
-- 
 - Show volumes, images, and containers present on the `dockerlab` VM, both in Portainer and on the command line.
 - Show that you are able to launch a detached container, query its IP address and open a shell.
-- Show that the `helloapp` container is running by opening it in a web browser.
-- 
+- Show that the different containers launched for this assignment (a.o. `helloapp`, `db`, `static-site`, the environment set up with Docker Compose, etc.) are running by opening the hosted website in a web browser, or by querying the database.
 - Show your lab report and cheat sheet! Your report should contain screenshots of intermediate milestones and console output (using Markdown fenced code blocks!) of commands you used. Your cheat sheet should contain an overview of the most important commands that you used to finish this assignment.
