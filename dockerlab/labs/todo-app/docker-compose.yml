@@ -1,0 +1,48 @@
+version: "3.7"
+
+# In the services: section, list all containers that you need for this
+# application stack. In this case, there's two: app and mysql.
+services:
+
+  # Container for the Node.js application
+  app:
+    # Specify the base image's name
+    image: node:12-alpine
+    # Command needed to build the application container (compare with the
+    # Dockerfile!)
+    command: sh -c "yarn install && yarn run dev"
+
+    # Port forwarding rules
+    ports:
+      - 3000:3000
+    
+    # Equivalent with Dockerfile WORKDIR directive
+    working_dir: /app
+    volumes:
+      - ./:/app
+    
+    # Environment variables needed for the application
+    environment:
+      # Host name of the database server. This is the name of the MySQL
+      # container!
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+  # Container for the database backend
+  db:
+    image: mysql:5.7
+
+    # Named volume for persistent data (volume must be defined! See below)
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    
+    # Environment variables
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
+# Named volumes used by the containers
+volumes:
+  todo-mysql-data:

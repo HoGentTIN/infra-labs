@@ -27,3 +27,6 @@ ansible/roles/*.*
 
 # Ansible fact cache
 .ansible_cache/
+
+# Node.js build directory
+node_modules/
