@@ -20,7 +20,7 @@ test/bats/
 
 # Directories containing roles imported from Ansible Galaxy
 # (user.role notation)
-ansible/roles/*.*
+*/ansible/roles/*.*
 
 # Ansible Retry-files
 *.retry
