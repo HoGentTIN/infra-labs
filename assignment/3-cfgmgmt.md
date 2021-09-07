@@ -4,15 +4,15 @@ TODO: intro
 
 The goal of this assignment is to set up a complete local network (domain name `infra.lan`) with some typical services: a web application server (e.g. to host an intranet site), DHCP and DNS. A router will connect the LAN to the Internet. The table below lists the hosts in this network:
 
-| Host name         | Alias  | IP             | Function         |
-| :---------------- | :----- | :------------- | :--------------- |
-| (physical system) |        | 172.16.0.1     | Your physical pc |
-| r001              | gw     | 172.16.255.254 | Router           |
-| srv001            | ns1    | 172.16.128.1   | Primary DNS      |
-| srv002            | ns2    | 172.16.128.2   | Secondary DNS    |
-| srv003            | dhcp   | 172.16.128.3   | DHCP server      |
-| srv010            | www    | 172.16.128.10  | Webserver        |
-| ws0001            |        | (DHCP)         | workstation      |
+| Host name         | Alias | IP             | Function         |
+| :---------------- | :---- | :------------- | :--------------- |
+| (physical system) |       | 172.16.0.1     | Your physical pc |
+| r001              | gw    | 172.16.255.254 | Router           |
+| srv001            | ns1   | 172.16.128.1   | Primary DNS      |
+| srv002            | ns2   | 172.16.128.2   | Secondary DNS    |
+| srv003            | dhcp  | 172.16.128.3   | DHCP server      |
+| srv010            | www   | 172.16.128.10  | Webserver        |
+| ws0001            |       | (DHCP)         | workstation      |
 
 ## 3.0. Learning goals
 
@@ -159,7 +159,25 @@ TODO
 
 ## 3.5. DHCP
 
-TODO
+In a local network, workstations usually get correct IP settings from a DHCP server. In this part of the lab assignment, you will use the Ansible role `bertvv.dhcp` to configure `srv003` as a DHCP server.
+
+The address space of the internal network is used as follows:
+
+| Lowest address | Highest address | Host type                    |
+| :------------- | :-------------- | :--------------------------- |
+| 172.16.0.1     | --              | Your physical system         |
+| 172.16.0.2     | 172.16.127.254  | Guests (dynamic IP)          |
+| 172.16.128.1   | 172.16.191.254  | Servers, gateway (static IP) |
+| 172.16.192.1   | 172.16.255.253  | Workstations (reserved IP)   |
+| 172.16.255.254 | --              | Router                       |
+
+Configure the DHCP server so workstations that attach to the network get an IP address in the correct range and all other necessary settings to get access to the LAN and the Internet. Lease time is 4 hours.
+
+Some remarks:
+
+- Only hosts with a dynamic or reserved IP address are assigned by the DHCP server!
+- Make sure that you don't have an overlap between the address range in your subnet declaration!
+- A subnet declaration's network IP should match the DHCP server's IP address, otherwise the daemon will not start.
 
 ## 3.6. Router
 
@@ -272,7 +290,7 @@ Now, we will create the playbook to actually configure our router. Create a file
         config:
           - name: GigabitEthernet2
             ipv4:
-              - address: 172.16.255.254/16
+              - address: IP_ADDRESS
         state: merged
     - name: Enable GE2
       cisco.ios.ios_interfaces:
@@ -281,6 +299,8 @@ Now, we will create the playbook to actually configure our router. Create a file
             enabled: yes
         state: merged
 ```
+
+Replace IP_ADDRESS with the actual IP address, in CIDR notation, the router should have.
 
 Now, execute the playbook with:
 
@@ -304,13 +324,20 @@ If you boot the VM:
 - When you open a web browser in the VM, you should have Internet access
 - You should be able to view the website on `srv010` by entering `https://www.avalon.lan/wordpress/` in the webbrowser.
 
+Verify that the IP address is in the correct range (the one reserved for guests with a dynamic IP). Reconfigure the DHCP server so your workstation VM will receive a reserved IP address (also in the correct range!).
+
 ## Reflection
 
 Remark that in this lab assignment, we actually only scratched the surface of what you can accomplish with Ansible (or any configuration management system, for that matter).
 
 If you don't find the features you need for the computer systems that you manage in existing Ansible Galaxy roles, you'll have to write your own playbooks. Or you may want to write your own reusable role to deploy a specific application on different platforms. This is outside the scope of this course, but you can find ample documentation on how to do this.
 
+The Vagrant environment we created runs on our laptop, but it should be relatively easy to run the playbook on production systems. What we need to accomplish this, is another inventory file that, instead of explaining how to control the VirtualBox VMs, lists the necessary settings for contacting the production machines. You "only" need the IP addresses, an account with administrator privileges with the corresponding password or SSH key.
+
+TODO: "golden image" (cfr Docker) vs cfgmgmt, idempotency vs immutable servers <https://www.jamasoftware.com/blog/ruminations-on-docker-and-configuration-management/>
+
 ## Acceptance criteria
 
 - You should be able to reconstruct the entire setup (except the VMs for the router and workstation) from scratch by executing the command `vagrant up`, without any manual configuration afterwards.
 - When booting a workstation VM in the network, it should get correct IP settings and should be able to view the local website (using the hostname, not the IP address) and have internet access.
+- You should be able to ping the hosts in the network by host name (rather than IP address)
