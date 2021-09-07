@@ -45,12 +45,12 @@ You will also need a Github repository with a sample application. Create a new G
       --name jenkins_server jenkins/jenkins:lts
     ```
 
-    This asks for some explanation:
-
+    - Port 8080 is exposed and forwarded to the host system
+    - `-u` runs the container as root
     - The first `-v` option mounts a volume for keeping persistent data
     - The second and third `-v` makes the Docker command available inside the Jenkins container. It is necessary to run the container as root to make this work (see the `-u` option).
-    - The last specifies TODO
-3. The container is started in the foreground. It will emit a password for the admin user generated at random. Record this password somewhare, because remembering will be impossible for most people. If you do forget the password, you can retrieve it from a specific file inside the container with the command `docker exec -it jenkins_server /bin/cat /var/jenkins_home/secrets/initialAdminPassword`)
+    - The last line specifies a name for the container and the image to be used
+3. The container is started in the foreground. It will emit a password for the admin user generated at random. Record this password somewhere, because remembering will be impossible for most people. If you do forget the password, you can retrieve it from a specific file inside the container with the command `docker exec -it jenkins_server /bin/cat /var/jenkins_home/secrets/initialAdminPassword`)
 
 ## 2.4 Configure Jenkins
 
@@ -91,7 +91,7 @@ Before you begin, you need to know the IP address of both the `samplerunning` an
 Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerlab` VM. Our acceptance test will consist of running the curl command from the Jenkins server, which will have a different IP address.
 
 1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *TestSampleApp*. Select a "free style project" as job type. Optionally, add a description.
-2. Under section "Build Triggers", select checkbox "Build after other projects are built". In the text field "Projects to watch", enter the name of the build job. 
+2. Under section "Build Triggers", select checkbox "Build after other projects are built". In the text field "Projects to watch", enter the name of the build job.
 3. Under sectiuon "Build steps", add a build step of type "Execute shell". Enter the following code:
 
     ```bash
@@ -105,7 +105,7 @@ Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerla
 
     Remark that this is not exactly a full-fledged acceptance test. In a real-life application, you would probably launch a test suite that has to be installed on the Jenkins server.
 
-    You could write a bash script that's a bit more useful than the command specified above. For example, if the job fails, the console output will not give you any clue into why. In case of a failure to find the expected IP address in the output of `curl`, you could print the actual output on the console.
+    You could write a bash script that's a bit more useful than the command specified above. For example, if the job fails, the console output will not give you any clue as to why. In case of a failure to find the expected IP address in the output of `curl`, you could print the actual output on the console.
 
 5. The Jenkins dashboard should now list both the build and test job. Stop and remove the `samplerunning` container and then launch the build job.
 
@@ -183,4 +183,4 @@ And we haven't even discussed any necessary changes to a database schema when ne
 Possible extensions to this assignment:
 
 - Create a build pipeline for a larger application, e.g. this [todo list app](https://docs.microsoft.com/en-us/visualstudio/docker/tutorials/your-application)
-- Make the lab setup persistent, i.e. when you run `vagrant destroy; vagrant up`, you have an functional Jenkins build server. You will have to do the Configuration Management lab assignment first!
+- Make the lab setup persistent, i.e. when you run `vagrant destroy; vagrant up`, you have a functional Jenkins build server again. The sample application and build pipeline should not necessarily be automatically reproduced. You will have to do the Configuration Management and Monitoring lab assignment first, since that's where you will learn the necessary skills.
