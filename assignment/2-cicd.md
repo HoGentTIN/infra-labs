@@ -1,10 +1,12 @@
 # Lab 2: Continuous Integration/Delivery with Jenkins
 
-TODO: Intro
+In this lab assignment, you will learn the basics on how to set up a build pipeline with Jenkins. In this lab assignment, we will leverage Docker as a platform to easily install and run a Jenkins server. Remark that in a real-world setting, you would probably have a dedicated build server.
 
 ## Learning Goals
 
-TODO
+- Installing and running Jenkins in a Docker container
+- Creating simple jobs and build pipelines
+- Running the pipeline to build and test an application, and to deploy changes in the application
 
 ## 2.1 Set up the lab environment
 
