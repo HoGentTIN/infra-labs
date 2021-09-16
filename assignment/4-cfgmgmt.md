@@ -1,4 +1,4 @@
-# Lab 3: Configuration Management with Ansible
+# Lab 4: Configuration Management with Ansible
 
 TODO: intro
 
