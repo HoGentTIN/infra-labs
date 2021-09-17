@@ -6,8 +6,7 @@ The goal of this assignment is to set up a complete local network (domain name `
 | :---------------- | :---- | :------------- | :--------------- |
 | (physical system) |       | 172.16.0.1     | Your physical pc |
 | r001              | gw    | 172.16.255.254 | Router           |
-| srv001            | ns1   | 172.16.128.1   | Primary DNS      |
-| srv002            | ns2   | 172.16.128.2   | Secondary DNS    |
+| srv001            | ns    | 172.16.128.2   | DNS              |
 | srv003            | dhcp  | 172.16.128.3   | DHCP server      |
 | srv010            | www   | 172.16.128.10  | Webserver        |
 | ws0001            |       | (DHCP)         | workstation      |
@@ -159,13 +158,51 @@ Verify that the website is available to users by surfing to the appropriate IP a
 
 ### 4.3.3. Wordpress
 
-Finally, use the `bertvv.wordpress` role to install Wordpress on the VM. The Wordpress site should be visible under *https://IP_ADDRESS/wordpress/*.
+Finally, use the `bertvv.wordpress` role to install Wordpress on the VM. The Wordpress site should be visible under `https://IP_ADDRESS/wordpress/`.
 
 ## 4.4. DNS
 
-In the next part, you will use the Ansible role `bertvv.bind` to configure `srv001` as a DNS server.
+In the next part, you will use the Ansible role `bertvv.bind` to configure `srv001` as a DNS server. The role's primarily purpose is to set up an authoritative-only name server that only replies to queries within its own domain. However, it is possible to configure it as a caching name server that either forwards requests to another DNS server, or replies to queries that have been cached.
 
-TODO
+Don't forget basic security settings, specifically the firewall!
+
+### Caching name server
+
+Let's start with configuring it as a caching nameserver without any authoritative zones. Define the necessary role variables to:
+
+- allow any host to send a query to this DNS server
+- allow recursion
+- set it up as a forward-only server
+- list IP addresses of one or two forwarders. Remark:
+    - you can forward to the IP address of the DNS-server provided in the VirtualBox NAT network.
+    - if you enter an external forwarder (e.g. Google's), be aware that this is not possible on the HOGENT campus. In that case, you need to use the HOGENT's own DNS servers. You can find these by checking the network settings of your physical system.
+- disable DNSSEC (which is important if you set up DNS in production, but this is beyond the scope of this course)
+
+If the service is running, check the following:
+
+- check the service state with `systemctl`
+- what sockets/ports are in use? (`ss`)
+- check the service logs with `journalctl`
+- look at the contents of the main configuration file
+- send a query to the DNS service with `dig` and check if it responds
+- send a query from your physical system and check if it responds
+- check the logs again, can you see which queries were sent an what response the server gave?
+
+### Authoritative name server
+
+If your DNS server is available to other hosts in the network, you can move on to the next part, which consists of adding a zone file for our domain, `infra.lan`. Define the variable `bind_zones` and specify:
+
+- the domain name
+- the IP subnet(s) associated with this domain
+- the primary name server's IP address and name
+- hosts within this domain, including their host name, IP address and any aliases.
+    - Ensure that hosts can access the website on `srv010` with either `http://www.infra.lan/` or `http://infra.lan/`
+  
+Again, when the service is running, check:
+
+- what changed in the main config file?
+- look at the contents of the zone file
+- send DNS-requests to the service, both from the VM and from your physical system. Check the logs to see whether these queries were received and how the service responded.
 
 ## 4.5. DHCP
 
@@ -344,7 +381,11 @@ If you don't find the features you need for the computer systems that you manage
 
 The Vagrant environment we created runs on our laptop, but it should be relatively easy to run the playbook on production systems. What we need to accomplish this, is another inventory file that, instead of explaining how to control the VirtualBox VMs, lists the necessary settings for contacting the production machines. You "only" need the IP addresses, an account with administrator privileges with the corresponding password or SSH key.
 
-TODO: "golden image" (cfr Docker) vs cfgmgmt, idempotency vs immutable servers <https://www.jamasoftware.com/blog/ruminations-on-docker-and-configuration-management/>
+System administrators use two main approaches when they need to repeatedly set up new machines. The first approach is to (manually) configure a single system, and save an image of the hard disk in a safe place. If a new system has to be set up, they take this "**golden image**", make any necessary (hopefully small) changes and release into production. Docker is an example of this approach, with Docker Hub being the main source of golden images. Configuration changes to containers running in production are infeasible. These systems are considered to be **immutable**. When an upgrade is necessary, newly created containers with the desired changes are spun up, while the old ones are taken down.
+
+The other approach is what you did in this lab assignment: use a **configuration management system**. This approach implies that the system administrator will never perform manual changes on a production system. If changes must be applied, the description of the desired state is changed and the playbook is re-applied. **Idempotence** guarantees that only the necessary changes are performed. The system can remain in production, often with no/little downtime.
+
+Both approaches (golden image vs config management) have their place, and a system administrator will choose between them as appropriate for their specific situation. The end goal is the same: the setup of a surver must be reproducible and automated as much as possible.
 
 ## Acceptance criteria
 
