@@ -173,8 +173,6 @@ And we haven't even discussed any necessary changes to a database schema when ne
 
 ## Acceptance criteria
 
-**Warning** Demonstrate this assignment to your lecturer before you begin with the Monitoring assignment. The latter will require you to rebuild the `dockerlab` VM, which will result in you losing all results of the former.
-
 - Show that you created a Github repository for the sample application
 - Show that the application is running by opening it in a web browser
 - Show the overview of jobs in the Jenkins dashboard
