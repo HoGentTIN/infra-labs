@@ -1,17 +1,6 @@
 # Lab reports
 
-## Table of contens
-
-1. [Container virtualization with Docker](1-report-containers.md)
-2. [Continuous Integration/Delivery pipeline with Jenkins](2-report-cicd.md)
-3. [Configuration Management with Ansible](3-report-cfgmgmt.md)
-4. [Monitoring and logging with Prometheus and EFK](4-report-monitoring.md)
-5. [Cheat sheet](cheat-sheet.md)
-
-## Instructions
-
 This directory contains all your lab reports, written in [Markdown](https://guides.github.com/features/mastering-markdown/). The contents of this repository are English, but feel free to write your own report in Dutch!
-
 
 **Writing correct Markdown is quite easy, so please take some effort to learn it!** A good text editor like VSCode has support for writing Markdown (e.g. HTML preview, code style checking, cleanup of tables, etc.). Make use of this so you're certain that when you push your reports to Github, they are formatted correctly.
 

@@ -183,4 +183,4 @@ And we haven't even discussed any necessary changes to a database schema when ne
 Possible extensions to this assignment:
 
 - Create a build pipeline for a larger application, e.g. this [todo list app](https://docs.microsoft.com/en-us/visualstudio/docker/tutorials/your-application)
-- Make the lab setup persistent, i.e. when you run `vagrant destroy; vagrant up`, you have a functional Jenkins build server again. The sample application and build pipeline should not necessarily be automatically reproduced. You will have to do the Configuration Management and Monitoring lab assignment first, since that's where you will learn the necessary skills.
+- Make the lab setup persistent, i.e. when you run `vagrant destroy; vagrant up`, you have a functional Jenkins build server again. The sample application and build pipeline should not necessarily be automatically reproduced.
