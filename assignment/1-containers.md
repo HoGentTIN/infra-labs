@@ -141,7 +141,7 @@ Exit the shell in the Alpine container and repeat the previous commands. Is the 
 Next, we will launch the container in the background (*detached*):
 
 ```console
-docker run -i -t -d --name alpine alpine
+docker run -d --name alpine alpine
 ```
 
 Docker complains that a container with that name already exists. Remove it with `docker rm alpine`. Repeat the `docker run` command and record the output, a hash identifying the container (the container ID).
