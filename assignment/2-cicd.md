@@ -28,7 +28,7 @@ You will also need a Github repository with a sample application. Create a new G
 
 ## 2.2 Build and verifiy the sample application
 
-1. Log in to the VM with `vagrant ssh` and go to directory `/vagrant/assignment/cicd-sample-app`
+1. Log in to the VM with `vagrant ssh` and go to directory `/vagrant/labs/cicd-sample-app`
 2. Build the application using the `sample-app.sh` script. The build script will likely not be executable, so keep that in mind. Downloading the image may take a while since it's almost 900 MB. After the build is finished, your application should be running as a Docker container.
 3. Verify the app by pointing your browser to <http://192.168.56.20:5050/>. You should see the text "You are calling me from 192.168.56.1" with a blue background.
 4. Stop the container and remove it.
