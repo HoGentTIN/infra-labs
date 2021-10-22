@@ -4,7 +4,7 @@ During the semester, you will get two troubleshooting lab assignments. At the be
 
 ## Learning goals
 
-- Find configuration errors in network services by applying a systematic an thorough methodology, based on a bottom-up approach following the layers of the TCP/IP model.
+- Find configuration errors in network services by applying a systematic a thorough methodology, based on a bottom-up approach following the layers of the TCP/IP model.
     - Know which properties must be checked on each layer of the protocol stack, and which commands to use
     - Know which commands and/or config file changes to apply in order to fix any deviations from the expected state of the system
 
