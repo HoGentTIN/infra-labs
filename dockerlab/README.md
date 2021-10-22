@@ -4,7 +4,7 @@ An opinionated skeleton that considerably simplifies setting up an Ansible proje
 
 Advantages include:
 
-- It works on Linux, MacOS **and** Windows (that is normally unsupported by Ansible)
+- It works on Linux, macOS **and** Windows (that is normally unsupported by Ansible)
 - You don't need to edit the `Vagrantfile`. Hosts are defined in a simple Yaml format (see below). Setting up a multiple-VM Vagrant environment becomes almost trivial. I gave a [lightning talk about this](https://youtu.be/qJ0VNO6z68M) at [Config Management Camp 2016 Ghent](http://cfgmgmtcamp.eu/) ([slides here](http://www.slideshare.net/bertvanvreckem/one-vagrantfile-to-rule-them-all)).
 
 See also the companion projects:
@@ -40,7 +40,7 @@ You can find an [initialization script](https://github.com/bertvv/ansible-toolbo
 > atb-init my-ansible-project
 ```
 
-This will download the latest version of the skeleton from Github, initialize a Git repository, do the first commit, and, optionally, install any specified role.
+This will download the latest version of the skeleton from GitHub, initialize a Git repository, do the first commit, and, optionally, install any specified role.
 
 ```ShellSession
 > atb-init my-ansible-project bertvv.el7 bertvv.httpd
@@ -240,7 +240,7 @@ PLAY RECAP *********************************************************************
 web001                     : ok=1    changed=0    unreachable=0    failed=0   
 ```
 
-The master playbook can the be refined further, e.g.
+The master playbook can to be refined further, e.g.
 
 ```yaml
 # ansible/site.yml
@@ -261,11 +261,11 @@ Role variables can then be defined in `ansible/group_vars/`.
 
 ## Running tests with BATS
 
-There's a discussion on whether Unit tests are necessary for Ansible. Indeed, with its declarative nature, Ansible largely takes away the need to check for certain things independently from the playbook definitions. For a bit more background, be sure to read through [this discussion about unit testing for Ansible](https://groups.google.com/forum/#!topic/ansible-project/7VhqDDtf6Js) on Google groups.
+There's a discussion on whether Unit tests are necessary for Ansible. Indeed, with its declarative nature, Ansible largely takes away the need to check for certain things independently of the playbook definitions. For a bit more background, be sure to read through [this discussion about unit testing for Ansible](https://groups.google.com/forum/#!topic/ansible-project/7VhqDDtf6Js) on Google Groups.
 
 However, it is my opinion that playbooks don't cover everything (e.g. whether a config file generated from a template has the expected contents, given the values of variables used). I value some form of testing, independent of the configuration management system. Personally, I'm a fan of the [Bash Automated Testing System (BATS)](https://github.com/bats-core/bats-core). It's basically an extension of Bash, so anyone familiar with it should be able to use BATS.
 
-Put your BATS test scripts in the `test/` directory and they will become available on your guest VMs as a synced folder, mounted in `/vagrant/test`. Scripts that you want to run on each host should be stored in the `test/` directory itself, scripts for individual hosts should be stored in subdirectories with the same name as the host (see example below). Inside the VM, run
+Put your BATS test scripts in the `test/` directory, and they will become available on your guest VMs as a synced folder, mounted in `/vagrant/test`. Scripts that you want to run on each host should be stored in the `test/` directory itself, scripts for individual hosts should be stored in subdirectories with the same name as the host (see example below). Inside the VM, run
 
 ```ShellSession
 > sudo /vagrant/test/runbats.sh
