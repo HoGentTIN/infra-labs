@@ -1,6 +1,6 @@
 # Lab 1: Container virtualization
 
-In this lab assignment, you'll explore the basic operation of Docker containers. The assignment contains step-by-step instructions that will help you building insight in how Docker works. Remark that you won't be a Docker expert after finishing the assignment. You may not understand everything that's going on the first time you try it. Carefully examine any output to see what happens and how everything works.
+In this lab assignment, you'll explore the basic operation of Docker containers. The assignment contains step-by-step instructions that will help you to build insight in how Docker works. Remark that you won't be a Docker expert after finishing the assignment. You may not understand everything that's going on the first time you try it. Carefully examine any output to see what happens and how everything works.
 
 The [Get Started](https://docs.docker.com/get-started/) guide at the Docker documentation website is similar to this lab assignment. Going through that guide as well may be useful to gain additional insight.
 
@@ -64,9 +64,9 @@ From there you access the Portainer dashboard. Explore the menu on the left and 
 
 We explored what's running on the Docker instance through Portainer, but it's important that you can manage Docker from the command line as well. The next part of this lab assignment explores the Docker command line interface. Don't hesitate to use the Portainer UI alongside to see what's happening.
 
-In this VM, based on Ubuntu 20.04 LTS, Docker was already preinstalled and started. If you would want to install Docker on a system manually, check out the [Docker documentation](https://docs.docker.com/engine/install/). Remark that on a standard installation, you need to be root in order to execute Docker commands that change the state of the system. However, in this VM, the default user `vagrant` has been made a member of user group `docker`. As a consequence, it is not necessary to put `sudo` in front of docker commands.
+In this VM, based on Ubuntu 20.04 LTS, Docker was already preinstalled and started. If you wanted to install Docker on a system manually, check out the [Docker documentation](https://docs.docker.com/engine/install/). Remark that on a standard installation, you need to be root in order to execute Docker commands that change the state of the system. However, in this VM, the default user `vagrant` has been made a member of user group `docker`. As a consequence, it is not necessary to put `sudo` in front of docker commands.
 
-First of all, log in to the dockerlab VM. Open a terminal on your physical system (e.g. Bash on Linux, zsh on MacOS or Git Bash on Windows) and go to the `dockerlab` directory.
+First of all, log in to the dockerlab VM. Open a terminal on your physical system (e.g. Bash on Linux, zsh on macOS or Git Bash on Windows) and go to the `dockerlab` directory.
 
 ```console
 $ vagrant ssh dockerlab
@@ -170,7 +170,7 @@ docker run -d -p 80 --name helloapp tutum/hello-world
 
 The `docker run` command started a container named `helloapp` and exposed port 80. That basically means that the container runs a website and listens on port 80. Check that this is in fact the case using `curl http://IP_ADDRESS/` (with IP_ADDRESS the IP address of the `helloapp` container) and record the result.
 
-Services that run inside containers can be made available to the outside world through port forwarding. Network traffic that arrives on the host system on that port, will be forwarded to port 80 of the container. Consequently, multiple containers may have port 80 exposed, but this will not result in a conflict on the host system, since they will be forwarded through a different port number.
+Services that run inside containers can be made available to the outside world through port forwarding. Network traffic that arrives at the host system on that port, will be forwarded to port 80 of the container. Consequently, multiple containers may have port 80 exposed, but this will not result in a conflict on the host system, since they will be forwarded through a different port number.
 
 What's the forwarded port for the `helloapp` container? There's several ways to determine this, a.o. `docker ps` and `docker port ID` (with ID the container ID of the `helloapp` container). Check if this works with `curl http://localhost:PORT/` (with PORT the forwarded port) and by opening a browser window on your physical system and go to URL <http://192.168.56.20:PORT>. Record the results, and take a screenshot of the web page. You should get something like this:
 
@@ -178,7 +178,7 @@ What's the forwarded port for the `helloapp` container? There's several ways to 
 
 ## 1.3 Persistent data
 
-When you stop and remove a container, all data in that container is gone. Often, it is necessary to preserve some data between consecutive instances of a container. In this section, we'll create a container with a MySQL database and we'll see how you can save the database contents even after the container was destroyed.
+When you stop and remove a container, all data in that container is gone. Often, it is necessary to preserve some data between consecutive instances of a container. In this section, we'll create a container with a MySQL database, and we'll see how you can save the database contents even after the container was destroyed.
 
 First, fetch the official MySQL Docker image from the registry. Then, create a Docker volume that will be used to store persistent data within the container:
 
@@ -248,7 +248,7 @@ mysql> INSERT INTO Catalog VALUES('1','Oracle Magazine','Oracle Publishing','Nov
 Query OK, 1 row affected (0.03 sec)
 ```
 
-Check if the table has been created correctly. Pay attention! Table names are case sensitive.
+Check if the table has been created correctly. Pay attention! Table names are case-sensitive.
 
 ```console
 mysql> show tables;
@@ -273,7 +273,7 @@ CatalogId       Journal Publisher       Edition Title   Author
 
 ### Persistence of volumes between container instances
 
-We now have succesfully set up a database that is available to any application or user that needs it.
+We now have successfully set up a database that is available to any application or user that needs it.
 
 Take a look at the directory for the volume we created earlier. You should find a directory for the `appdb` database and a file that contains the `Catalog` table.
 
@@ -296,7 +296,7 @@ We now have successfully created a volume that can be used to store persistent d
 
 ## 1.4 Custom images
 
-In many situations, e.g. when you want to deploy a webapplication in a container, you'll need to customize an existing Docker image, or create one from scratch. In this part of the lab, we'll explore the possibilities.
+In many situations, e.g. when you want to deploy a web application in a container, you'll need to customize an existing Docker image, or create one from scratch. In this part of the lab, we'll explore the possibilities.
 
 First, go to the directory `/vagrant/labs/static-website` and look at the contents
 
@@ -362,7 +362,7 @@ Now, start a container based on this image, forward port 8080 on the host system
 docker run -d -p 8080:80 --name nginx local:static-site
 ```
 
-Now check if the website is available. Inside the VM, you should be able to fetch the index page with `curl http://localhost:8080/`. On your physical system, open a webbrowser and point it to `http://192.168.56.20:8080/` and verify that the web page is visible. It should contain a simple message ("Hello world/It works!").
+Now check if the website is available. Inside the VM, you should be able to fetch the index page with `curl http://localhost:8080/`. On your physical system, open a web browser and point it to `http://192.168.56.20:8080/` and verify that the web page is visible. It should contain a simple message ("Hello world/It works!").
 
 ### Discussion
 
@@ -372,7 +372,7 @@ If your needs are becoming too complex, it's best to keep the Dockerfile as simp
 
 ## 1.5 Layered file system
 
-A Docker image is fundamentally different than a "normal" VM disk image. The latter is nothing more than a file containing, byte for byte, the contents of what would be written to a physical disk partition. When mounted, it contains the filesystem with a directory tree. A Docker image consists of several so-called layers. Each layer adds some files and/or directories to the filesystem.
+A Docker image is fundamentally different from a "normal" VM disk image. The latter is nothing more than a file containing, byte for byte, the contents of what would be written to a physical disk partition. When mounted, it contains the filesystem with a directory tree. A Docker image consists of several so-called layers. Each layer adds some files and/or directories to the filesystem.
 
 ### Inspecting layers of an image
 
@@ -404,19 +404,19 @@ Make any change to the `index.html` file (e.g. change the background colour), re
 
 ## 1.6 Docker compose
 
-A container should only have a single application running inside. Consequently, putting an entire LAMP-stack (webserver + database) in a single container is bad practice. When we want to run a dynamic webapplication with a database backend on Docker, we need at least two containers: one with the database, the other with the webserver. The webserver can only start if the database is already up and running. Environments with multiple containers and dependencies between services running on them are quite common.
+A container should only have a single application running inside. Consequently, putting an entire LAMP-stack (webserver + database) in a single container is bad practice. When we want to run a dynamic web application with a database backend on Docker, we need at least two containers: one with the database, the other with the webserver. The webserver can only start if the database is already up and running. Environments with multiple containers and dependencies between services running on them are quite common.
 
 Docker Compose is a tool that was developed to help define and share multi-container applications. With Compose, we can create a YAML file to define the services and with a single command, can spin everything up or tear it all down.
 
 In this part of the assignment, you will use a compose file to set up a reproducible multi-container application stack.
 
-In the dockerlab VM, go to `/vagrant/labs/todo-app`. This directory contains a Node.js demo application, a todo-list, that is also used in the [Docker Get Started guide](https://docs.docker.com/get-started/). The directory also contains a Dockerfile. Use it to build an image for the application container, named `todo-app` and start it (by now, you should know how!). The application uses port 3000. Use port forwarding so you can access the application from the physical system. Check that the application is running by opening a browser window and entering the application's URL:
+In the dockerlab VM, go to `/vagrant/labs/todo-app`. This directory contains a Node.js demo application, a todo-list, that is also used in the [Docker Get Started guide](https://docs.docker.com/get-started/). The directory also contains a Dockerfile. Use it to build an image for the application container, named `todo-app` and start it (by now, you should know how!). The application uses port 3000. Use port forwarding, so you can access the application from the physical system. Check that the application is running by opening a browser window and entering the application's URL:
 
 ![Demo todo application running in a container at URL https://192.168.56.20:3000/](img/1-todo-app.png)
 
 Also check the container and image in Portainer!
 
-The application is built so it can run without a database backend. Check the container's log to see how it saves data! However, when you point it to a MySQL database server, it will use that. Our goal is to set up an application stack with two containers, one for the app and the other for the database. The data stored in the database should of course be persistent.
+The application is built, so it can run without a database backend. Check the container's log to see how it saves data! However, when you point it to a MySQL database server, it will use that. Our goal is to set up an application stack with two containers, one for the app and the other for the database. The data stored in the database should of course be persistent.
 
 Open the `docker-compose.yml` file in the directory `dockerlab/labs/todo-app` and carefully examine the contents and comments. This file defines two containers, `app` and `db`. It also contains the instructions to build the image, that you can also find in the `Dockerfile`. Finally, a volume is defined that will be used to make the database contents persistent.
 
@@ -426,7 +426,7 @@ Stop the currently running instance of the application container and then run th
 docker-compose up -d
 ```
 
-The `-d` option will run docker-compose in the background so you can immediately use the terminal.
+The `-d` option will run docker-compose in the background, so you can immediately use the terminal.
 
 Use portainer or the command line to inspect the containers. What are the names and IP addresses of the two containers?
 
