@@ -35,7 +35,7 @@ Edit `ansible/site.yml` and add the following:
     - bertvv.rh-base
 ```
 
-The role [bertvv.rh-base](https://galaxy.ansible.com/bertvv/rh-base) is one that is published on [Ansible Galaxy](https://galaxy.ansible.com/), a public repository of Ansible roles. It does some basic configuration tasks for improving security (like enabling SELinux and starting the firewall) and allows the user to specify some desired configuration options like packages to install, users or groups to create, etc. by initializing some role variables. See the role documentation either on Ansible Galaxy (click the Read Me button) or in the role's [public Github repository](https://github.com/bertvv/ansible-role-rh-base). It contains an overview of all supported role variables and how to use them.
+The role [bertvv.rh-base](https://galaxy.ansible.com/bertvv/rh-base) is one that is published on [Ansible Galaxy](https://galaxy.ansible.com/), a public repository of Ansible roles. It does some basic configuration tasks for improving security (like enabling SELinux and starting the firewall) and allows the user to specify some desired configuration options like packages to install, users or groups to create, etc. by initializing some role variables. See the role documentation either on Ansible Galaxy (click the Read Me button) or in the role's [public GitHub repository](https://github.com/bertvv/ansible-role-rh-base). It contains an overview of all supported role variables and how to use them.
 
 When you execute the command `vagrant provision srv010`, the playbook `site.yml` will be executed and the role will be applied to the VM. Check the output to verify that some changes (how many and which ones?) were applied to the system.
 
@@ -52,7 +52,7 @@ $ ./scripts/role-deps.sh
 
 After that, run `vagrant provision` again and check that the role is applied correctly.
 
-Variables can be set in a playbook itself, but this would quickly make it very hard to read. However, you can create separate variable files on some default locations, either in a subdirectory `ansible/group_vars/`  or `ansible/host_vars/`. Host variables will only be visible inside that specific host. For `srv010`, this host variable file should be called `ansible/host_vars/srv010.yml`. Hosts can be ordered into groups, but at this time, this is outside of the scope of this assignment. However, there is one special group, called `all`, that contains all hosts that can be managed by Ansible (for now, only `srv010`). This variable file should be called `ansible/group_vars/all.yml`, which is already created. Open this file and add the following content:
+Variables can be set in a playbook itself, but this would quickly make it very hard to read. However, you can create separate variable files on some default locations, either in a subdirectory `ansible/group_vars/`  or `ansible/host_vars/`. Host variables will only be visible inside that specific host. For `srv010`, this host variable file should be called `ansible/host_vars/srv010.yml`. Hosts can be ordered into groups, but at this time, this is outside the scope of this assignment. However, there is one special group, called `all`, that contains all hosts that can be managed by Ansible (for now, only `srv010`). This variable file should be called `ansible/group_vars/all.yml`, which is already created. Open this file and add the following content:
 
 ```yaml
 # ansible/group_vars/all.yml
@@ -81,21 +81,21 @@ Update the variable file so the following useful packages are also installed:
 
 Create a user account for yourself (e.g. your first name, in lowercase letters) with a chosen password. Check the role documentation to see which variable you should use and the correct syntax to initialise it. This user will become an administrator of the system, which means that they should get `sudo` privileges. On a RedHat-like system like the one we're working on, this means that we should add this user to the (already existing) user group `wheel`.
 
-On your physical system, you should already have an SSH key pair (that you use for Github). If not, create one by executing the command `ssh-keygen` in a Bash terminal (on Mac/Linux) or Git Bash (Windows) and pressing ENTER until you're back on a shell prompt. Your home directory should contain a directory `.ssh` with a file `id_rsa.pub`. This is your public key. Open the file with a text editor (or print the contents with `cat`) and copy the text. Register this public key file in `all.yml` in the way that is specified in the role documentation. This will allow you to SSH into the VM as your own user without having to specify a password.
+On your physical system, you should already have an SSH key pair (that you use for GitHub). If not, create one by executing the command `ssh-keygen` in a Bash terminal (on Mac/Linux) or Git Bash (Windows) and pressing ENTER until you're back on a shell prompt. Your home directory should contain a directory `.ssh` with a file `id_rsa.pub`. This is your public key. Open the file with a text editor (or print the contents with `cat`) and copy the text. Register this public key file in `all.yml` in the way that is specified in the role documentation. This will allow you to SSH into the VM as your own user without having to specify a password.
 
-Re-apply the role and check the changes. Verify that you can SSH into the VM with your user name, without a password. Open a (Bash) shell on your physical system and execute:
+Re-apply the role and check the changes. Verify that you can SSH into the VM with your username, without a password. Open a (Bash) shell on your physical system and execute:
 
 ```console
 ssh USER@IP_ADDRESS
 ```
 
-where you replace USER with your chosen user name (case sensitive!) and the IP address of your VM on interface `eth1` (starts with 172). The first time you do this, you will get a warning that the authenticity of this host can't be established. Enter `yes` to confirm that you want to continue connecting.
+where you replace USER with your chosen username (case-sensitive!) and the IP address of your VM on interface `eth1` (starts with 172). The first time you do this, you will get a warning that the authenticity of this host can't be established. Enter `yes` to confirm that you want to continue connecting.
 
 Since the previous changes were applied to `group_vars/all.yml`, every VM that we will add to our environment will automatically have these properties.
 
 ## 4.3. Web application server
 
-Next, we will configure `srv010` as a web application server. We start with the database backend (MariaDB), followed by the web server (Apache) and finally a PHP application (Wordpress).
+Next, we will configure `srv010` as a web application server. We start with the database backend (MariaDB), followed by the web server (Apache) and finally a PHP application (WordPress).
 
 ### 4.3.1. MariaDB database server
 
@@ -141,7 +141,7 @@ MariaDB [(none)]> select user,host,password from mysql.user;
 MariaDB [(none)]> 
 ```
 
-Also check whether the wordpress database can be accessed by the user.
+Also check whether the WordPress database can be accessed by the user.
 
 ```console
 [vagrant@srv010 ~]$ mysql -uwordpress -pPASSWORD wordpress
@@ -154,11 +154,11 @@ The next step is to install the Apache webserver, using the `bertvv.httpd` role.
 
 The web server should support encrypted communication over HTTPS. When installing HTTPS support for Apache, a default server key and certificate are installed (in `/etc/pki/tls/private` and `/etc/pki/tls/certs`, respectively). [Generate a new (self-signed) certificate](https://wiki.centos.org/HowTos/Https) and ensure that it is installed on the webserver, and that Apache is configured to use that, rather than the default. Remark that generating the certificate should not be part of your Ansible playbook. Create the certificate once, manually. Then copy the necessary files to the correct location within the directory containing your Ansible playbook (usually a subdirectory `files/`). Your Vagrant/Ansible project directory is mounted inside your VM under `/vagrant/`, so it's easy to copy the generated files to the appropriate directories.
 
-Verify that the website is available to users by surfing to the appropriate IP addres in a webbrowser on your physical system. Don't forget that you may have to configure the firewall (`bertvv.rh-base` supports this).
+Verify that the website is available to users by surfing to the appropriate IP address in a web browser on your physical system. Don't forget that you may have to configure the firewall (`bertvv.rh-base` supports this).
 
-### 4.3.3. Wordpress
+### 4.3.3. WordPress
 
-Finally, use the `bertvv.wordpress` role to install Wordpress on the VM. The Wordpress site should be visible under `https://IP_ADDRESS/wordpress/`.
+Finally, use the `bertvv.wordpress` role to install WordPress on the VM. The WordPress site should be visible under `https://IP_ADDRESS/wordpress/`.
 
 ## 4.4. DNS
 
@@ -186,7 +186,7 @@ If the service is running, check the following:
 - look at the contents of the main configuration file
 - send a query to the DNS service with `dig` and check if it responds
 - send a query from your physical system and check if it responds
-- check the logs again, can you see which queries were sent an what response the server gave?
+- check the logs again, can you see which queries were sent a what response the server gave?
 
 ### Authoritative name server
 
@@ -235,7 +235,7 @@ There are some Vagrant base boxes for router OSs, but most don't work very well.
 - `VirtualBox ETW-CSR1000v.ova`: base VirtualBox appliance
 - `csr1000v-universalk9.17.03.02.iso` (or a newer version), the installation ISO for Cisco IOS
 
-Be aware that the router VM takes 4GB of RAM!
+Be aware that the router VM takes 4 GB of RAM!
 
 ### Create and boot the router VM
 
@@ -243,7 +243,7 @@ Be aware that the router VM takes 4GB of RAM!
 - Copy or move the .iso file to the directory that contains the VM (should be something like `${HOME}/VirtualBox VMs/vmlab/CSR1000v`, with `${HOME}` your user's home directory, i.e. `c:\Users\USERNAME` on Windows, `/Users/USERNAME` on Mac or `/home/USERNAME` on Linux).
 - Edit the Network settings of the VM.
     - By default, you should have a single active network adapter. Attach it to a NAT interface. After booting, an IP address will be assigned by DHCP (which one?)
-    - Enable Adapter 2 and attach it to the Host-only networkinterface that is also used by your other VMs in this environment. After booting, these interfaces will be set to "administratively down".
+    - Enable Adapter 2 and attach it to the Host-only network interface that is also used by your other VMs in this environment. After booting, these interfaces will be set to "administratively down".
     - The Adapter Type must be set to **Paravirtualized Network (virtio-net)**
 - Boot the VM. You should see a GRUB boot menu. Choose the default option or wait until it is selected automatically.
 - The installation process will now begin. This will probably take a while! The VM will reboot once and the installation-ISO will be ejected. If everything went ok, you should see the following text:
@@ -361,7 +361,7 @@ Change the playbook so the Router hostname is set to `r001`. Execute the playboo
 
 ## 4.7. Integration: a working LAN
 
-We now have set up all components for a working local network. The final step is to put them all together by booting the router and all VMs. Remark that our setup uses up a lot of RAM, so this will only work if you have enough physical RAM (at least 16GB recommended).
+We now have set up all components for a working local network. The final step is to put them all together by booting the router and all VMs. Remark that our setup uses up a lot of RAM, so this will only work if you have enough physical RAM (at least 16 GB recommended).
 
 To test whether the LAN actually works, configure a new VirtualBox VM manually and use a pre-configured .ova (e.g. [Kali Linux](https://www.kali.org/get-kali/#kali-virtual-machines), or your favourite Linux distribution from [osboxes.org](https://www.osboxes.org/)). This workstation VM should have enough RAM and processor cores to boot into a graphical user interface and one network adapter. Attach the adapter to the VirtualBox Host-only Interface used by the other VMs in your lab environment.
 
@@ -369,7 +369,7 @@ If you boot the VM:
 
 - the DHCP-server should provide it with an IP address in the correct range, the correct IP addresses for the default gateway and DNS server.
 - When you open a web browser in the VM, you should have Internet access
-- You should be able to view the website on `srv010` by entering `https://www.avalon.lan/wordpress/` in the webbrowser.
+- You should be able to view the website on `srv010` by entering `https://www.avalon.lan/wordpress/` in the web browser.
 
 Verify that the IP address is in the correct range (the one reserved for guests with a dynamic IP). Reconfigure the DHCP server so your workstation VM will receive a reserved IP address (also in the correct range!).
 
@@ -385,7 +385,7 @@ System administrators use two main approaches when they need to repeatedly set u
 
 The other approach is what you did in this lab assignment: use a **configuration management system**. This approach implies that the system administrator will never perform manual changes on a production system. If changes must be applied, the description of the desired state is changed and the playbook is re-applied. **Idempotence** guarantees that only the necessary changes are performed. The system can remain in production, often with no/little downtime.
 
-Both approaches (golden image vs config management) have their place, and a system administrator will choose between them as appropriate for their specific situation. The end goal is the same: the setup of a surver must be reproducible and automated as much as possible.
+Both approaches (golden image vs config management) have their place, and a system administrator will choose between them as appropriate for their specific situation. The end goal is the same: the setup of a server must be reproducible and automated as much as possible.
 
 ## Acceptance criteria
 
