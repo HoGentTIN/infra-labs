@@ -12,7 +12,7 @@ In this lab assignment, you will learn the basics on how to set up a build pipel
 
 For this lab assignment, we'll be using the `dockerlab` environment. Start the `dockerlab` VM and log in.
 
-You will also need a Github repository with a sample application. Create a new Git repository (this can be on your physical system, where Git and access to Github is already configured). Some starter code is provided in directory [cicd-sample-app](cicd-sample-app/).
+You will also need a GitHub repository with a sample application. Create a new Git repository (this can be on your physical system, where Git and access to GitHub is already configured). Some starter code is provided in directory [cicd-sample-app](cicd-sample-app/).
 
 1. Ensure that Git is configured, e.g. with `git config --global --list` and check that `user.name` and `user.email` are set. If not, make the necessary changes:
 
@@ -21,12 +21,12 @@ You will also need a Github repository with a sample application. Create a new G
     git config --global user.email "bobby.tables@student.hogent.be"
     ```
 
-2. Copy the starter code from `cicd-sample-app` to some new directory outside of this Git repository. Enter the copied directory and initialise it as a Git repository with `git init`. Commit all code (e.g. `git add .; git commit -m "Initial commit of sample application"`).
-3. On Github, create a new public repository and record the URL, probably something like `https://github.com/USER/cicd-sample-app/` (with USER your Github user name).
-4. Link your local repository with the one you created on Github: `git remote add origin git@github.com:USER/cicd-sample-app.git` (The Github page of your repository will show you the the exact command needed for this).
-5. Push the locally committed code to Github: `git push -u origin main`
+2. Copy the starter code from `cicd-sample-app` to some new directory outside this Git repository. Enter the copied directory and initialise it as a Git repository with `git init`. Commit all code (e.g. `git add .; git commit -m "Initial commit of sample application"`).
+3. On GitHub, create a new public repository and record the URL, probably something like `https://github.com/USER/cicd-sample-app/` (with USER your GitHub username).
+4. Link your local repository with the one you created on GitHub: `git remote add origin git@github.com:USER/cicd-sample-app.git` (The GitHub page of your repository will show you the exact command needed for this).
+5. Push the locally committed code to GitHub: `git push -u origin main`
 
-## 2.2 Build and verifiy the sample application
+## 2.2 Build and verify the sample application
 
 1. Log in to the VM with `vagrant ssh` and go to directory `/vagrant/labs/cicd-sample-app`
 2. Build the application using the `sample-app.sh` script. The build script will likely not be executable, so keep that in mind. Downloading the image may take a while since it's almost 900 MB. After the build is finished, your application should be running as a Docker container.
@@ -57,7 +57,7 @@ You will also need a Github repository with a sample application. Create a new G
 ## 2.4 Configure Jenkins
 
 1. Open a browser tab and point it to <http://192.168.56.20:8080/>. You are asked to enter the administrator password that you recorded in the previous step. Next, Jenkins will ask which plugins you want to have installed. Choose to install the recommended plugins. After this, Jenkins will initialize, which takes some time. You can follow the progress on the web page.
-2. When the initialization process finishes, you are redirected to a page that asks you to create an admin user. For now, you can skip this an continue as admin by following the link at the bottom.
+2. When the initialization process finishes, you are redirected to a page that asks you to create an admin user. For now, you can skip this a continued as admin by following the link at the bottom.
 3. On the next page, titled "Instance Configuration", just click "Save and Finish" and then "Start using Jenkins".
 
 ## 2.5 Use Jenkins to build your application
@@ -65,7 +65,7 @@ You will also need a Github repository with a sample application. Create a new G
 1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *BuildSampleApp*. Select a "free style project" as job type.
 2. The following page allows you to configure the new job. There are a lot of options, so you may be overwhelmed at first.
     - Optionally, enter a description
-    - In the section "Source Code Management", select the radio button "Git" and enter the https-URL to your Github project, `https://github.com/USER/cicd-sample-app.git`
+    - In the section "Source Code Management", select the radio button "Git" and enter the https-URL to your GitHub project, `https://github.com/USER/cicd-sample-app.git`
     - Since your repository is public it is not necessary to enter credentials.
     - The branch to be built should be `*/main` instead of the default `*/master`
     - In the section "Build Steps", click "Add a build step" and select "Execute shell" from the dropdown list. enter `bash ./sample-app.sh`
@@ -94,7 +94,7 @@ Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerla
 
 1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *TestSampleApp*. Select a "free style project" as job type. Optionally, add a description.
 2. Under section "Build Triggers", select checkbox "Build after other projects are built". In the text field "Projects to watch", enter the name of the build job.
-3. Under sectiuon "Build steps", add a build step of type "Execute shell". Enter the following code:
+3. Under section "Build steps", add a build step of type "Execute shell". Enter the following code:
 
     ```bash
     curl http://APP_IP:5050/ | grep "You are calling me from JENKINS_IP"
@@ -103,7 +103,7 @@ Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerla
     replacing `APP_IP` and `JENKINS_IP` with the appropriate IP addresses.
 4. Save and run the job to verify if it succeeds
 
-    Jenkins can determine whether the job succeeded or failed using the exit status of the command given. When `grep` finds a matching line in the standard output of `curl`, it will finish with exit status 0 (indicating succes). If not, it will have exit status 1 (indicating failure). If the command returns a nonzero exit status, it will consider the job to be failed.
+    Jenkins can determine whether the job succeeded or failed using the exit status of the command given. When `grep` finds a matching line in the standard output of `curl`, it will finish with exit status 0 (indicating success). If not, it will have exit status 1 (indicating failure). If the command returns a nonzero exit status, it will consider the job to be failed.
 
     Remark that this is not exactly a full-fledged acceptance test. In a real-life application, you would probably launch a test suite that has to be installed on the Jenkins server.
 
@@ -115,7 +115,7 @@ Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerla
 
 The build process in a real-life application is usually much more complex. A full-fledged Continuous Integration/Delivery (CI/CD) pipeline will usually consist of more steps than the ones discussed here (e.g. linting, static code analysis, unit tests, integration tests, acceptance tests, performance tests, packaging and deployment in a production environment). This lab assignment, probably your first encounter with a CI/CD tool is a bit simpler, but should give you an idea of what's possible.
 
-In the next step, we will set up a complete build pipeline that, if the build and test steps succeeed, will launch your application as a Docker container.
+In the next step, we will set up a complete build pipeline that, if the build and test steps succeed, will launch your application as a Docker container.
 
 1. Go to the Jenkins pipeline and create a new item. Enter an appropriate name (e.g. SampleAppPipeline) and select "Pipeline" as job type. Press OK.
 2. Optionally, enter a description and in the Pipeline section, enter the following code:
@@ -152,9 +152,9 @@ In the next step, we will set up a complete build pipeline that, if the build an
 In this final step, we will make a change in the application, re-launch the build pipeline and view the result in the browser.
 
 1. Go to your local copy of the Git repository with the sample application. Open file `static/style.css` and change the page background color from "lightsteelblue" into whatever you want.
-2. Save the file, commit your changes and push them to Github.
+2. Save the file, commit your changes and push them to GitHub.
 3. In the Jenkins dashboard, launch the build pipeline.
-4. Reload the application in the webbrowser, it should have a different background colour now!
+4. Reload the application in the web browser, it should have a different background colour now!
 
 ## Reflection
 
@@ -162,18 +162,18 @@ This lab assignment was much less complex than a real-life build pipeline would 
 
 What would change in a real-life case:
 
-- The Git repository would probably be maintained on the Jenkins build server, or a dedicated internal server instead of Github. That opens the possibility to trigger a Jenkins build on each push to the central Git repo.
-- If Github is used, the repository is likely to be private. In that case, you have to configure Jenkins so it has the necessary credentials to download the code from Github, an [access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token).
+- The Git repository would probably be maintained on the Jenkins build server, or a dedicated internal server instead of GitHub. That opens the possibility to trigger a Jenkins build on each push to the central Git repo.
+- If GitHub is used, the repository is likely to be private. In that case, you have to configure Jenkins, so it has the necessary credentials to download the code from GitHub, an [access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 - The build pipeline would probably be much more elaborate, with linting, static code analysis, unit tests, functional, integration, acceptance and performance tests, ...
 - Jenkins would probably package the application (if the build succeeded) and upload it to a package repository.
 - In this lab, the application is stopped during the build process. This is of course not desirable on a production server. Usually, you would have the application running on multiple web server instances with a load balancer to distribute client requests to each instance. Deploying the application would consist of launching containers with the new version of the code, and removing those with the old version.
-- Depending on the situation, it may be decided that the deployment phase is never done automatically, but manually after a succesful build. This is the difference between *Continuous Integration* (no automatic deployment) and *Continuous Delivery*.
+- Depending on the situation, it may be decided that the deployment phase is never done automatically, but manually after a successful build. This is the difference between *Continuous Integration* (no automatic deployment) and *Continuous Delivery*.
 
 And we haven't even discussed any necessary changes to a database schema when new code is deployed!
 
 ## Acceptance criteria
 
-- Show that you created a Github repository for the sample application
+- Show that you created a GitHub repository for the sample application
 - Show that the application is running by opening it in a web browser
 - Show the overview of jobs in the Jenkins dashboard
 - Make a change to the sample application, commit and push
