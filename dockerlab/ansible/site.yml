@@ -1,5 +1,0 @@
-# site.yml
----
-- hosts: all
-  roles:
-    - dockerlab
