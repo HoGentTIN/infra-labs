@@ -1,4 +1,4 @@
-# Lab 2: Continuous Integration/Delivery with Jenkins
+# Lab 1: Continuous Integration/Delivery with Jenkins
 
 In this lab assignment, you will learn the basics on how to set up a build pipeline with Jenkins. In this lab assignment, we will leverage Docker as a platform to easily install and run a Jenkins server. Remark that in a real-world setting, you would probably have a dedicated build server.
 
@@ -8,7 +8,7 @@ In this lab assignment, you will learn the basics on how to set up a build pipel
 - Creating simple jobs and build pipelines
 - Running the pipeline to build and test an application, and to deploy changes in the application
 
-## 2.1 Set up the lab environment
+## 1.1 Set up the lab environment
 
 For this lab assignment, we'll be using the `dockerlab` environment. Start the `dockerlab` VM and log in.
 
@@ -26,14 +26,14 @@ You will also need a GitHub repository with a sample application. Create a new G
 4. Link your local repository with the one you created on GitHub: `git remote add origin git@github.com:USER/cicd-sample-app.git` (The GitHub page of your repository will show you the exact command needed for this).
 5. Push the locally committed code to GitHub: `git push -u origin main`
 
-## 2.2 Build and verify the sample application
+## 1.2 Build and verify the sample application
 
 1. Log in to the VM with `vagrant ssh` and go to directory `/vagrant/labs/cicd-sample-app`
 2. Build the application using the `sample-app.sh` script. The build script will likely not be executable, so keep that in mind. Downloading the image may take a while since it's almost 900 MB. After the build is finished, your application should be running as a Docker container.
 3. Verify the app by pointing your browser to <http://192.168.56.20:5050/>. You should see the text "You are calling me from 192.168.56.1" with a blue background.
 4. Stop the container and remove it.
 
-## 2.3 Download and run the Jenkins Docker image
+## 1.3 Download and run the Jenkins Docker image
 
 1. Download the Jenkins image with `docker pull jenkins/jenkins:lts`
 2. Start the Jenkins Docker container:
@@ -54,13 +54,13 @@ You will also need a GitHub repository with a sample application. Create a new G
     - The last line specifies a name for the container and the image to be used
 3. The container is started in the foreground. It will emit a password for the admin user generated at random. Record this password somewhere, because remembering will be impossible for most people. If you do forget the password, you can retrieve it from a specific file inside the container with the command `docker exec -it jenkins_server /bin/cat /var/jenkins_home/secrets/initialAdminPassword`)
 
-## 2.4 Configure Jenkins
+## 1.4 Configure Jenkins
 
 1. Open a browser tab and point it to <http://192.168.56.20:8080/>. You are asked to enter the administrator password that you recorded in the previous step. Next, Jenkins will ask which plugins you want to have installed. Choose to install the recommended plugins. After this, Jenkins will initialize, which takes some time. You can follow the progress on the web page.
 2. When the initialization process finishes, you are redirected to a page that asks you to create an admin user. For now, you can skip this a continued as admin by following the link at the bottom.
 3. On the next page, titled "Instance Configuration", just click "Save and Finish" and then "Start using Jenkins".
 
-## 2.5 Use Jenkins to build your application
+## 1.5 Use Jenkins to build your application
 
 1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *BuildSampleApp*. Select a "free style project" as job type.
 2. The following page allows you to configure the new job. There are a lot of options, so you may be overwhelmed at first.
@@ -80,7 +80,7 @@ If you manage a Jenkins instance for a larger development team, you will probabl
 
 Remark that if you try to run the build job a second time, it will fail. Check the console output to determine the cause!
 
-## 2.6 Add a job to test the application
+## 1.6 Add a job to test the application
 
 We will now create another job that runs an acceptance test after the build process has finished.
 
@@ -111,7 +111,7 @@ Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerla
 
 5. The Jenkins dashboard should now list both the build and test job. Stop and remove the `samplerunning` container and then launch the build job.
 
-## 2.7 Create a build pipeline
+## 1.7 Create a build pipeline
 
 The build process in a real-life application is usually much more complex. A full-fledged Continuous Integration/Delivery (CI/CD) pipeline will usually consist of more steps than the ones discussed here (e.g. linting, static code analysis, unit tests, integration tests, acceptance tests, performance tests, packaging and deployment in a production environment). This lab assignment, probably your first encounter with a CI/CD tool is a bit simpler, but should give you an idea of what's possible.
 
@@ -147,7 +147,7 @@ In the next step, we will set up a complete build pipeline that, if the build an
 3. Next, start a build. Jenkins will show you how each phase of the pipeline progresses. Check the console output of each phase.
 4. If the run succeeds, the application should be running. Verify by opening it in a web browser.
 
-## 2.8 Make a change in the application
+## 1.8 Make a change in the application
 
 In this final step, we will make a change in the application, re-launch the build pipeline and view the result in the browser.
 

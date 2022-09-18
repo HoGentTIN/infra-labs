@@ -1,4 +1,4 @@
-# Lab 4: Configuration Management with Ansible
+# Lab 2: Configuration Management with Ansible
 
 The goal of this assignment is to set up a complete local network (domain name `infra.lan`) with some typical services: a web application server (e.g. to host an intranet site), DHCP and DNS. A router will connect the LAN to the Internet. The table below lists the hosts in this network:
 
@@ -16,13 +16,13 @@ The goal of this assignment is to set up a complete local network (domain name `
 - You can automate the setup of network services with a configuration management system
 - You can install and configure reproducible virtual environments (Infrastructure as Code) with suitable tools for the automation of the entire lifecycle of a VM
 
-## 4.1. Set up the lab environment
+## 2.1. Set up the lab environment
 
 Go to the `vmlab` directory and start the Vagrant environment, currently consisting of a single VM with host name `srv010` (which will become our web server). The last few lines of the output shows that an Ansible Playbook was run. You can find that playbook in the subdirectory [vmlab/ansible/site.yml](../vmlab/ansible/site.yml). Currently, this playbook is all but empty, so nothing really happens. Verify in the output that no changes were applied to the VM (look for the text `changed=0`).
 
 Check that you can log in to the VM with `vagrant ssh srv010`. What is/are the IP addresses of this VM? Which Linux distribution are we running (command `lsb_release -a`)? Find some information about this distro! What version of the Linux kernel is installed (uname -a)?
 
-## 4.2. Basic server setup
+## 2.2. Basic server setup
 
 The easiest way to configure a VM is to apply a [role](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html). A role is a playbook that is written to be reusable. It contains a general description of the desired state of the target system, and you can customize it for your specific case by setting role variables.
 
@@ -93,11 +93,11 @@ where you replace USER with your chosen username (case-sensitive!) and the IP ad
 
 Since the previous changes were applied to `group_vars/all.yml`, every VM that we will add to our environment will automatically have these properties.
 
-## 4.3. Web application server
+## 2.3. Web application server
 
 Next, we will configure `srv010` as a web application server. We start with the database backend (MariaDB), followed by the web server (Apache) and finally a PHP application (WordPress).
 
-### 4.3.1. MariaDB database server
+### 2.3.1. MariaDB database server
 
 Use the `bertvv.mariadb` role to install [MariaDB](https://mariadb.org/) (a fork of MySQL) on the VM and specify the following properties:
 
@@ -148,7 +148,7 @@ Also check whether the WordPress database can be accessed by the user.
 
 ```
 
-### 4.3.2. Apache web server
+### 2.3.2. Apache web server
 
 The next step is to install the Apache webserver, using the `bertvv.httpd` role.
 
@@ -156,11 +156,11 @@ The web server should support encrypted communication over HTTPS. When installin
 
 Verify that the website is available to users by surfing to the appropriate IP address in a web browser on your physical system. Don't forget that you may have to configure the firewall (`bertvv.rh-base` supports this).
 
-### 4.3.3. WordPress
+### 2.3.3. WordPress
 
 Finally, use the `bertvv.wordpress` role to install WordPress on the VM. The WordPress site should be visible under `https://IP_ADDRESS/wordpress/`.
 
-## 4.4. DNS
+## 2.4. DNS
 
 In the next part, you will use the Ansible role `bertvv.bind` to configure `srv001` as a DNS server. The role's primarily purpose is to set up an authoritative-only name server that only replies to queries within its own domain. However, it is possible to configure it as a caching name server that either forwards requests to another DNS server, or replies to queries that have been cached.
 
@@ -204,7 +204,7 @@ Again, when the service is running, check:
 - look at the contents of the zone file
 - send DNS-requests to the service, both from the VM and from your physical system. Check the logs to see whether these queries were received and how the service responded.
 
-## 4.5. DHCP
+## 2.5. DHCP
 
 In a local network, workstations usually get correct IP settings from a DHCP server. In this part of the lab assignment, you will use the Ansible role `bertvv.dhcp` to configure `srv003` as a DHCP server.
 
@@ -226,7 +226,7 @@ Some remarks:
 - Make sure that you don't have an overlap between the address range in your subnet declaration!
 - A subnet declaration's network IP should match the DHCP server's IP address, otherwise the daemon will not start.
 
-## 4.6. Router
+## 2.6. Router
 
 In the previous parts of this lab assignment, we set up several machines that, when put together, can form a fully functioning local network. There's still a component missing, and that is the router that connects this network with the outside world. So, next, we are going to set up a router and configure it using Ansible.
 
@@ -359,7 +359,7 @@ from the directory containing your inventory file and router config playbook. Ve
 
 Change the playbook so the Router hostname is set to `r001`. Execute the playbook and verify the result.
 
-## 4.7. Integration: a working LAN
+## 2.7. Integration: a working LAN
 
 We now have set up all components for a working local network. The final step is to put them all together by booting the router and all VMs. Remark that our setup uses up a lot of RAM, so this will only work if you have enough physical RAM (at least 16 GB recommended).
 
