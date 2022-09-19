@@ -1,0 +1,11 @@
+# vagrant_hosts.yml
+#
+# List of hosts to be created by Vagrant. For more information about the
+# possible settings, see the documentation at
+# <https://github.com/bertvv/ansible-skeleton>
+---
+
+- name: dockerlab
+  ip: 192.168.56.20
+  box: bento/ubuntu-20.04
+  memory: 4096

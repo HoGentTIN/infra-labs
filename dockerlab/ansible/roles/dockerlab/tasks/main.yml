@@ -1,0 +1,102 @@
+# ansible/roles/dockerlab/tasks/main.yml
+# Set up the VM as a test environment for Ansible roles, based on Docker and
+# Molecule.
+---
+
+- name: Include distribution specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_os_family }}.yml"
+  tags: dockerlab
+
+- name: Ensure the necessary (apt) packages are installed
+  apt:
+    name: "{{ dockerlab_packages }}"
+    state: present
+    update_cache: true
+  tags: dockerlab
+
+- name: Ensure the necessary (pip) packages are installed
+  pip:
+    name: "{{ dockerlab_pip_packages }}"
+    state: present
+  tags: dockerlab
+
+- name: Ensure the Docker group exists
+  group:
+    name: docker
+    state: present
+  tags: dockerlab
+
+- name: Ensure user Vagrant is a member of the Docker group
+  user:
+    name: vagrant
+    groups:
+      - docker
+  tags: dockerlab
+
+- name: Ensure Docker daemon metrics can be scraped by Prometheus
+  template:
+    src: etc_docker_daemon.json
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart docker
+  tags: dockerlab
+
+- name: Ensure necessary services are running and enabled
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items: "{{ dockerlab_services }}"
+  tags: dockerlab
+
+- name: Enable some handy aliases for managing Docker
+  copy:
+    src: docker-aliases.sh
+    dest: /etc/profile.d/docker-aliases.sh
+    owner: root
+    group: root
+    mode: 0644
+  tags: dockerlab
+
+- name: Create a Docker volume for persistent data
+  docker_volume:
+    volume_name: "{{ item }}"
+    state: present
+  with_items: "{{ dockerlab_volumes }}"
+  tags: dockerlab
+
+# We create a separate network for permanent containers, so the first containers
+# spun up by students get the expected, default IP address. We specify the
+# subnet, since we will need the IP address of the host system and we want that
+# to be predictable (default: 172.30.0.1)
+- name: Create a Docker internal network for permanent containers
+  docker_network:
+    name: mgmt_net
+    ipam_config:
+      - subnet: "{{ dockerlab_subnet }}"
+        gateway: "{{ dockerlab_ip }}"
+  tags: dockerlab
+
+- name: Create a Docker container for Portainer
+  docker_container:
+    name: portainer
+    image: portainer/portainer-ce
+    state: started
+    restart_policy: always
+    ports:
+      - 8000:8000
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - name: mgmt_net
+    purge_networks: true
+    networks_cli_compatible: true
+    network_mode: default
+  tags: dockerlab

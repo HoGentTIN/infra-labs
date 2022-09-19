@@ -21,7 +21,7 @@ In this lab assignment, you will learn the basics on how to set up a build pipel
 
 For this lab assignment, we'll be using the `dockerlab` environment. Start the `dockerlab` VM and log in.
 
-You will also need a GitHub repository with a sample application. Create a new Git repository (this can be on your physical system, where Git and access to GitHub is already configured). Some starter code is provided in directory [cicd-sample-app](cicd-sample-app/).
+You will also need a GitHub repository with a sample application. Create a new Git repository (this can be on your physical system, where Git and access to GitHub is already configured). Some starter code is provided in directory [cicd-sample-app](../dockerlab/cicd-sample-app/).
 
 1. Ensure that Git is configured, e.g. with `git config --global --list` and check that `user.name` and `user.email` are set. If not, make the necessary changes:
 
