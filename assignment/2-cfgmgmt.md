@@ -16,6 +16,12 @@ The goal of this assignment is to set up a complete local network (domain name `
 - You can automate the setup of network services with a configuration management system
 - You can install and configure reproducible virtual environments (Infrastructure as Code) with suitable tools for the automation of the entire lifecycle of a VM
 
+## Acceptance criteria
+
+- You should be able to reconstruct the entire setup (except the VMs for the router and workstation) from scratch by executing the command `vagrant up`, without any manual configuration afterwards.
+- When connecting a workstation VM to the network, it should get correct IP settings and should be able to view the local website (using the hostname, not the IP address) and have internet access.
+- You should be able to ping the hosts in the network by host name (rather than IP address) from the workstation VM.
+
 ## 2.1. Set up the lab environment
 
 Go to the `vmlab` directory and start the Vagrant environment, currently consisting of a single VM with host name `srv010` (which will become our web server). The last few lines of the output shows that an Ansible Playbook was run. You can find that playbook in the subdirectory [vmlab/ansible/site.yml](../vmlab/ansible/site.yml). Currently, this playbook is all but empty, so nothing really happens. Verify in the output that no changes were applied to the VM (look for the text `changed=0`).
@@ -175,7 +181,7 @@ Let's start with configuring it as a caching nameserver without any authoritativ
 - set it up as a forward-only server
 - list IP addresses of one or two forwarders. Remark:
     - you can forward to the IP address of the DNS-server provided in the VirtualBox NAT network.
-    - if you enter an external forwarder (e.g. Google's), be aware that this is not possible on the HOGENT campus. In that case, you need to use the HOGENT's own DNS servers. You can find these by checking the network settings of your physical system.
+    - if you enter an external forwarder (e.g. Quad9), be aware that this may not always be possible from the HOGENT campus. Most of these are firewalled. Instead, you need to use the HOGENT's own DNS servers or one of the few forwarders that are allowed (e.g. Google, Cloudflare). You should be able to find the IP addresses of HOGENT's DNS servers on your own!
 - disable DNSSEC (which is important if you set up DNS in production, but this is beyond the scope of this course)
 
 If the service is running, check the following:
@@ -386,9 +392,3 @@ System administrators use two main approaches when they need to repeatedly set u
 The other approach is what you did in this lab assignment: use a **configuration management system**. This approach implies that the system administrator will never perform manual changes on a production system. If changes must be applied, the description of the desired state is changed and the playbook is re-applied. **Idempotence** guarantees that only the necessary changes are performed. The system can remain in production, often with no/little downtime.
 
 Both approaches (golden image vs config management) have their place, and a system administrator will choose between them as appropriate for their specific situation. The end goal is the same: the setup of a server must be reproducible and automated as much as possible.
-
-## Acceptance criteria
-
-- You should be able to reconstruct the entire setup (except the VMs for the router and workstation) from scratch by executing the command `vagrant up`, without any manual configuration afterwards.
-- When booting a workstation VM in the network, it should get correct IP settings and should be able to view the local website (using the hostname, not the IP address) and have internet access.
-- You should be able to ping the hosts in the network by host name (rather than IP address) from the workstation VM.

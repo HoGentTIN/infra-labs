@@ -171,6 +171,7 @@ This lab assignment was much less complex than a real-life build pipeline would 
 
 What would change in a real-life case:
 
+- In this lab assignment, we installed Jenkins inside a Docker container. In real life, it would probably be installed as a package on a dedicated virtual machine or bare metal.
 - The Git repository would probably be maintained on the Jenkins build server, or a dedicated internal server instead of GitHub. That opens the possibility to trigger a Jenkins build on each push to the central Git repo.
 - If GitHub is used, the repository is likely to be private. In that case, you have to configure Jenkins, so it has the necessary credentials to download the code from GitHub, an [access token](https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 - The build pipeline would probably be much more elaborate, with linting, static code analysis, unit tests, functional, integration, acceptance and performance tests, ...

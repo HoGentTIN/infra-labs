@@ -6,6 +6,14 @@ The goal of this assignment is to become familiar with [Kubernetes](https://kube
 
 TODO
 
+## Acceptance criteria
+
+- Demonstrate that your Kubernetes cluster is running and that you are able to manage it:
+    - Open the dashboard to show what's running on the cluster: nodes, pods, services, deployments, etc.
+    - Also show these from the command line (using `kubectl`)
+- Show all applications that are running on the cluster, both in the web browser and the resources necessary for each application (Pods, Deployments, Services, etc.)
+- Show your lab notes and cheat sheet with useful commands
+
 ## Additional resources
 
 Kubernetes is a current topic that attracts a lot of interest. That also means that there's a lot of information available and that it's sometimes hard to find good intro-level resources. Here's a small selection that may help you get acquainted with Kubernetes:
@@ -104,11 +112,3 @@ $ kubectl apply -f <manifest-file.yml>
 For example, increase the number of replicas of the echoserver app (currently only 1) in the manifest file `echo-all.yml`, and apply the change. Check whether this operation was successful and find out on which node each pod is running (which command can you use for this?). Try to send multiple requests to the service (e.g. curl in a for loop) and check whether all pods process requests by looking at the logs of each pod (with which command).
 
 **Optional:** If one of the nodes in the cluster becomes unavailable (e.g. `minikube node stop minikube-m03). What happens? Is the application still available? Are the pods still running? Is a pod automatically rescheduled to another node? What if you restart the node? Will the cluster "heal" itself completely or not?
-
-## Acceptance criteria
-
-- Demonstrate that your Kubernetes cluster is running and that you are able to manage it:
-    - Open the dashboard to show what's running on the cluster: nodes, pods, services, deployments, etc.
-    - Also show these from the command line (using `kubectl`)
-- Show all applications that are running on the cluster, both in the web browser and the resources necessary for each application (Pods, Deployments, Services, etc.)
-- Show your lab notes and cheat sheet with useful commands
