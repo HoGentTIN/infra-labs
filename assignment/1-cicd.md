@@ -8,6 +8,15 @@ In this lab assignment, you will learn the basics on how to set up a build pipel
 - Creating simple jobs and build pipelines
 - Running the pipeline to build and test an application, and to deploy changes in the application
 
+## Acceptance criteria
+
+- Show that you created a GitHub repository for the sample application
+- Show that the application is running by opening it in a web browser
+- Show the overview of jobs in the Jenkins dashboard
+- Make a change to the sample application, commit and push
+- Launch the build pipeline and show the change to the application in the browser
+- Show your lab report and cheat sheet! It should contain screenshots of consecutive steps and console output of commands you used.
+
 ## 1.1 Set up the lab environment
 
 For this lab assignment, we'll be using the `dockerlab` environment. Start the `dockerlab` VM and log in.
@@ -171,16 +180,7 @@ What would change in a real-life case:
 
 And we haven't even discussed any necessary changes to a database schema when new code is deployed!
 
-## Acceptance criteria
-
-- Show that you created a GitHub repository for the sample application
-- Show that the application is running by opening it in a web browser
-- Show the overview of jobs in the Jenkins dashboard
-- Make a change to the sample application, commit and push
-- Launch the build pipeline and show the change to the application in the browser
-- Show your lab report and cheat sheet! It should contain screenshots of consecutive steps and console output of commands you used.
-
-Possible extensions to this assignment:
+## Possible extensions
 
 - Create a build pipeline for a larger application, e.g. this [todo list app](https://docs.microsoft.com/en-us/visualstudio/docker/tutorials/your-application)
 - Make the lab setup persistent, i.e. when you run `vagrant destroy; vagrant up`, you have a functional Jenkins build server again. The sample application and build pipeline should not necessarily be automatically reproduced.
