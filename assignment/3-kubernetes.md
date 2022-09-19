@@ -44,6 +44,7 @@ If you think you will use Kubernetes professionally, or if you want to gain a mu
 - **Optionally,** use the command `minikube node add` to spin up two extra nodes so you have an actual cluster with a control plane node and two workers.
     - By default, Minikube runs a single Kubernetes (control plane) node. For the purpose of this lab assignment, that's sufficient, but you will get a better feel of how a multi-node cluster works in a multi-node environment (control plane + worker nodes).
     - Remark that there's a command that immediately starts multiple nodes: `minikube start --nodes 3`. However, this command sometimes hangs during execution. Starting nodes individually is more reliable.
+    - Also remark that when you're running a multi-node cluster, it may not work very well. When you try to access an application that is running on the cluster, expect that some requests may succeed while others fail.
 
 ## 3.2. Basic operation
 
@@ -100,7 +101,9 @@ If you want to make a change to an existing Kubernetes object, edit the manifest
 $ kubectl apply -f <manifest-file.yml>
 ```
 
-For example, increase the number of replicas of the echoserver app (currently only 1) in the manifest file `echo-all.yml`, and apply the change. Check whether this operation was successful and find out on which node each pod is running.
+For example, increase the number of replicas of the echoserver app (currently only 1) in the manifest file `echo-all.yml`, and apply the change. Check whether this operation was successful and find out on which node each pod is running (which command can you use for this?). Try to send multiple requests to the service (e.g. curl in a for loop) and check whether all pods process requests by looking at the logs of each pod (with which command).
+
+**Optional:** If one of the nodes in the cluster becomes unavailable (e.g. `minikube node stop minikube-m03). What happens? Is the application still available? Are the pods still running? Is a pod automatically rescheduled to another node? What if you restart the node? Will the cluster "heal" itself completely or not?
 
 ## Acceptance criteria
 
