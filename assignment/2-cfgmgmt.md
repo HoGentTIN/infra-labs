@@ -75,7 +75,7 @@ These variables will result in the following changes:
 - The package repository EPEL (Extra Packages for Enterprise Linux) is installed and enabled
 - The software packages `bash-completion` and `vim-enhanced` are installed
 
-Run `vagrant provision pr010` again to bring the VM to the new desired state. Check the output to verify the changes.
+Run `vagrant provision srv010` again to bring the VM to the new desired state. Check the output to verify the changes.
 
 Update the variable file so the following useful packages are also installed:
 
