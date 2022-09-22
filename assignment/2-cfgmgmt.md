@@ -107,7 +107,7 @@ Next, we will configure `srv010` as a web application server. We start with the 
 
 Use the `bertvv.mariadb` role to install [MariaDB](https://mariadb.org/) (a fork of MySQL) on the VM and specify the following properties:
 
-- create a database for Drupal (e.g. `wordpress`);
+- create a database for Worpress (e.g. `wordpress`);
 - create a user (e.g. `wordpress`) that has all privileges (except GRANT) on all tables in `wordpress` with a strong, randomized password.
 
 Verify that the user and database exist by logging in to the MySQL database and showing databases and users:
