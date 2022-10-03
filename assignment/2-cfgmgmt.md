@@ -202,7 +202,7 @@ If your DNS server is available to other hosts in the network, you can move on t
 - the IP subnet(s) associated with this domain
 - the primary name server's IP address and name
 - hosts within this domain, including their host name, IP address and any aliases.
-    - Ensure that hosts can access the website on `srv010` with either `http://www.infra.lan/` or `http://infra.lan/`
+    - Ensure the DNS server responds to a query for both `www.infra.lan` and `infra.lan`, so that later, client machines will be able to point their browser to `http://www.infra.lan` and `http://infra.lan`.
   
 Again, when the service is running, check:
 
