@@ -168,13 +168,34 @@ Finally, use the `bertvv.wordpress` role to install WordPress on the VM. The Wor
 
 ## 2.4. DNS
 
-In the next part, you will use the Ansible role `bertvv.bind` to configure `srv001` as a DNS server. The role's primarily purpose is to set up an authoritative-only name server that only replies to queries within its own domain. However, it is possible to configure it as a caching name server that either forwards requests to another DNS server, or replies to queries that have been cached.
+In the next part, you will use the Ansible role `bertvv.bind` to configure a **new** server `srv001` as a DNS server. The role's primarily purpose is to set up an authoritative-only name server that only replies to queries within its own domain. However, it is possible to configure it as a caching name server that either forwards requests to another DNS server, or replies to queries that have been cached.
 
 Don't forget basic security settings, specifically the firewall!
 
+### Creating the new server
+
+Before you can start configuring `srv001` as a DNS server, you first need to create it. Have a look at the `vagrant-hosts.yml` file in the `vmlab` folder. You'll see the configuration for `srv010`, which you've used up until now. Note there is an example of a more elaborate host definition. It shows how to limit the number of CPUs, the amount of RAM, etc.
+
+Edit the `vagrant-hosts.yml` file and add a definition for `srv001`. Use the same Vagrant box as `srv010`, and make sure to use the correct IP address.
+
+Next, make some changes to the `site.yml` file:
+
+- make sure `srv010` only has the following roles:
+    - `bertvv.rh-base`
+    - `bertvv.mariadb`
+    - `bertvv.httpd`
+    - `bertvv.wordpress`
+- add a new section for `srv001` and assign these roles:
+    - `bertvv.rh-base`
+    - `bertvv.bind`
+
+Both servers share the `bertvv.rh-base` role. How can you write this better?
+
+You probably put every role variable inside `group_vars/all.yml`. It works, but it's better to split variables based on host or group name. Split your `group_vars/all.yml` into separate files for each host. Note that every server shares the `bertvv.rh-base` role and thus shares the same role variables. Do not duplicate them in the new host variable files.
+
 ### Caching name server
 
-Let's start with configuring it as a caching nameserver without any authoritative zones. Define the necessary role variables to:
+Let's now start configuring the new server as a caching nameserver without any authoritative zones. Define the necessary role variables to:
 
 - allow any host to send a query to this DNS server
 - allow recursion
@@ -224,7 +245,7 @@ The address space of the internal network is used as follows:
 | 172.16.192.1   | 172.16.255.253  | Workstations (reserved IP)   |
 | 172.16.255.254 | --              | Router                       |
 
-Configure the DHCP server so workstations that attach to the network get an IP address in the correct range and all other necessary settings to get access to the LAN and the Internet. Lease time is 4 hours.
+First, create a new virtual machine named `srv003`. Then configure the DHCP server so workstations that attach to the network get an IP address in the correct range and all other necessary settings to get access to the LAN and the Internet. Lease time is 4 hours.
 
 Some remarks:
 
