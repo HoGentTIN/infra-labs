@@ -386,6 +386,8 @@ from the directory containing your inventory file and router config playbook. Ve
 
 Change the playbook so the Router hostname is set to `r001`. Execute the playbook and verify the result.
 
+Finally, make sure the running configuration is not lost after rebooting the router. Add a new task to the playbook, execute it and verify that you're still able to ping the router from e.g. your physical machine.
+
 ## 2.7. Integration: a working LAN
 
 We now have set up all components for a working local network. The final step is to put them all together by booting the router and all VMs. Remark that our setup uses up a lot of RAM, so this will only work if you have enough physical RAM (at least 16 GB recommended).
