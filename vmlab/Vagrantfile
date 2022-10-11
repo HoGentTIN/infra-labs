@@ -127,6 +127,9 @@ def provision_ansible(node, host, groups)
         "ansible/#{host['playbook']}" :
         "ansible/site.yml"
     ansible.become = true
+    ansible.extra_vars = run_locally? ? {
+      ansible_python_interpreter: "/usr/libexec/platform-python"
+    } : nil
   end
 end
 
