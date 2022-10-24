@@ -127,9 +127,14 @@ def provision_ansible(node, host, groups)
         "ansible/#{host['playbook']}" :
         "ansible/site.yml"
     ansible.become = true
-    ansible.extra_vars = run_locally? ? {
-      ansible_python_interpreter: "/usr/libexec/platform-python"
-    } : nil
+
+    # if the host box contains almalinux and we run on a Windows
+    # we need to set the ansible_python_interpreter
+    if host['box'].include? 'almalinux' and run_locally?
+      ansible.extra_vars = {
+        ansible_python_interpreter: "/usr/libexec/platform-python"
+      }
+    end
   end
 end
 
