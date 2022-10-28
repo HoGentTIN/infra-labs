@@ -1,4 +1,4 @@
-# Lab 3: Container orchestration with Kubernetes
+# Lab 4: Container orchestration with Kubernetes
 
 The goal of this assignment is to become familiar with [Kubernetes](https://kubernetes.io), Google's container orchestration engine.
 

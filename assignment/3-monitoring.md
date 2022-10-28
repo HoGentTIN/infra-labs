@@ -1,4 +1,4 @@
-# Lab 4: Monitoring
+# Lab 3: Monitoring
 
 In this assignment, you will set up a server that allows you to monitor the entire virtual environment set up in the configuration management lab.
 
