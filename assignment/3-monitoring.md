@@ -16,14 +16,19 @@ In this assignment, you will set up a server that allows you to monitor the enti
     - Run a query for a metric
 - Show the Grafana dashboard you created
 - Demonstrate any extensions to the assignment that you have implemented
+- Your lab report is detailed and complete
 
-## 2.1. Set up the server
+## 2.1. Set up the monitoring server
 
-Add a new server, called `srv004` to the `vmlab` environment. Install Prometheus using the `cloudalchemy.prometheus` role. All VMs (including `srv004`) should also have the `cloudalchemy.node_exporter` role installed.
+Add a new server, called `srv004` to the `vmlab` environment and assign IP-address 172.16.128.4. Install Prometheus using the `cloudalchemy.prometheus` role.
 
 Set the variables `prometheus_targets` and `prometheus_scrape_configs`.
 
-Log in to the Prometheus dashboard and check that you receive metrics from all targets.
+Log in to the Prometheus dashboard and check that you receive metrics from your monitoring server itself.
+
+If your Prometheus server has to access all monitored VMs through their IP-address, the metrics they emit will become harder to interpret. We have set up a DNS server, so let's make use of it. In `site.yml`, add a `pre_task:` to the playbook section for `srv004` where you set your DNS server as the resolver to be used by your monitoring server. Remember that on EL, this is done by editing the `/etc/resolv.conf` file.
+
+From now on, in any Prometheus configuration setting, you can specify any host with their FQDN (e.g. `srv001.infra.lan`) instead of their IP address.
 
 ## 2.2. Install Node Exporter
 
@@ -38,6 +43,8 @@ Restart Prometheus and ensure that it can access metrics for all the VMs.
 The Prometheus web UI allows you to enter queries to visualize specific metrics. However, this is quite cumbersome, as it only shows what you ask for. What you probably want is a dashboard that shows essential information about the systems being monitored. Prometheus recommends to use Grafana for this purpose.
 
 Install the `cloudalchemy.grafana` role on your monitoring server. Set up Prometheus as a data source. In the web interface, create a Dashboard that shows at least some metrics gathered from Prometheus.
+
+If an existing Grafana Dashboard can be reused for your setup, this can be automated through one of the role variables. If not, it's okay if the dashboard was created manually and cannot be automatically reproduced after a `vagrant destroy; vagrant up`. In that case, it's important to document the process thoroughly in your lab report.
 
 ## 2.4. Extensions
 
