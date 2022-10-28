@@ -82,6 +82,7 @@ Update the variable file so the following useful packages are also installed:
 - bind-utils
 - git
 - nano
+- setroubleshoot-server
 - tree
 - wget
 
@@ -211,6 +212,7 @@ If the service is running, check the following:
 - what sockets/ports are in use? (`ss`)
 - check the service logs with `journalctl`
 - look at the contents of the main configuration file
+- enable query logging
 - send a query to the DNS service with `dig` and check if it responds
 - send a query from your physical system and check if it responds
 - check the logs again, can you see which queries were sent a what response the server gave?
@@ -230,6 +232,7 @@ Again, when the service is running, check:
 - what changed in the main config file?
 - look at the contents of the zone file
 - send DNS-requests to the service, both from the VM and from your physical system. Check the logs to see whether these queries were received and how the service responded.
+- Try a zone transfer request
 
 ## 2.5. DHCP
 
