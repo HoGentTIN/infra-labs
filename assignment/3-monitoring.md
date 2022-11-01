@@ -38,11 +38,16 @@ Install the `cloudalchemy.node_exporter` role on all VMs in your setup. Update t
 
 Restart Prometheus and ensure that it can access metrics for all the VMs.
 
+> If Prometheus installation complains about `libselinux-python` rename `redhat.yml` to `redhat-7.yml` and `redhat-8.yml` to `redhat.yml` in the roles' `vars` folder.
+
 ## 2.3. Create a Dashboard with Grafana
 
 The Prometheus web UI allows you to enter queries to visualize specific metrics. However, this is quite cumbersome, as it only shows what you ask for. What you probably want is a dashboard that shows essential information about the systems being monitored. Prometheus recommends to use Grafana for this purpose.
 
 Install the `cloudalchemy.grafana` role on your monitoring server. Set up Prometheus as a data source. In the web interface, create a Dashboard that shows at least some metrics gathered from Prometheus.
+
+> If the installation fails due to a failing GPG key check, have a look at the template file for Grafana's yum repository configuration. Try to create your own template which does not check the GPG key for now (have a look in the role documentation how you can change this).
+> Related issue: <https://github.com/grafana/grafana/issues/55962>
 
 If an existing Grafana Dashboard can be reused for your setup, this can be automated through one of the role variables. If not, it's okay if the dashboard was created manually and cannot be automatically reproduced after a `vagrant destroy; vagrant up`. In that case, it's important to document the process thoroughly in your lab report.
 
