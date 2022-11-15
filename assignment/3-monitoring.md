@@ -30,6 +30,8 @@ If your Prometheus server has to access all monitored VMs through their IP-addre
 
 From now on, in any Prometheus configuration setting, you can specify any host with their FQDN (e.g. `srv001.infra.lan`) instead of their IP address.
 
+> If the Prometheus installation complains about `libselinux-python` rename `redhat.yml` to `redhat-7.yml` and `redhat-8.yml` to `redhat.yml` in the roles' `vars` folder.
+
 ## 2.2. Install Node Exporter
 
 The Prometheus server polls all monitored systems for any metrics that you expose. Basic system metrics can be provided by Prometheus' Node Exporter.
@@ -37,8 +39,6 @@ The Prometheus server polls all monitored systems for any metrics that you expos
 Install the `cloudalchemy.node_exporter` role on all VMs in your setup. Update the `prometheus_targets` and/or `prometheus_scrape_configs` as needed.
 
 Restart Prometheus and ensure that it can access metrics for all the VMs.
-
-> If Prometheus installation complains about `libselinux-python` rename `redhat.yml` to `redhat-7.yml` and `redhat-8.yml` to `redhat.yml` in the roles' `vars` folder.
 
 ## 2.3. Create a Dashboard with Grafana
 
