@@ -1,0 +1,129 @@
+# Frontend pods (dev/acceptance/prod)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fe-dev
+  labels:
+    env: development
+    team: web
+    pod_type: frontend
+    release_version: "2.0"
+spec:
+  containers:
+    - name: echoserver
+      image: registry.k8s.io/echoserver:1.4
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fe-acceptance
+  labels:
+    env: acceptance
+    team: web
+    pod_type: frontend
+    release_version: "2.0"
+spec:
+  containers:
+    - name: echoserver
+      image: registry.k8s.io/echoserver:1.4
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fe-prod
+  labels:
+    env: production
+    team: web
+    pod_type: frontend
+    release_version: "1.0"
+spec:
+  containers:
+    - name: echoserver
+      image: registry.k8s.io/echoserver:1.4
+---
+# API service pods (dev/acceptance/prod)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-dev
+  labels:
+    env: development
+    team: api
+    pod_type: backend
+    release_version: "2.0"
+spec:
+  containers:
+    - name: echoserver
+      image: registry.k8s.io/echoserver:1.4
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-acceptance
+  labels:
+    env: acceptance
+    team: api
+    pod_type: backend
+    release_version: "2.0"
+spec:
+  containers:
+    - name: echoserver
+      image: registry.k8s.io/echoserver:1.4
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-prod
+  labels:
+    env: production
+    team: api
+    pod_type: backend
+    release_version: "1.0"
+spec:
+  containers:
+    - name: echoserver
+      image: registry.k8s.io/echoserver:1.4
+---
+# Database pods (dev/acceptance/prod)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-dev
+  labels:
+    env: development
+    team: db
+    pod_type: db
+    release_version: "2.0"
+spec:
+  containers:
+    - name: redis
+      image: redis:7
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-acceptance
+  labels:
+    env: acceptance
+    team: db
+    pod_type: db
+    release_version: "2.0"
+spec:
+  containers:
+    - name: redis
+      image: redis:7
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-prod
+  labels:
+    env: production
+    team: db
+    pod_type: db
+    release_version: "1.0"
+spec:
+  containers:
+    - name: redis
+      image: redis:7
+      

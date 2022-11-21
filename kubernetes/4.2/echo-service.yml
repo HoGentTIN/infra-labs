@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: echo-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - port: 8080
     protocol: TCP
