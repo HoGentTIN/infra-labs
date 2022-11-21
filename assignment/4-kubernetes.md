@@ -4,7 +4,14 @@ The goal of this assignment is to become familiar with [Kubernetes](https://kube
 
 ## Learning goals
 
-TODO
+- Understanding the basic architecture of Kubernetes
+- Being able to operate a Kubernetes cluster
+    - Applying changes using manifest files
+- Being able to manipulate Kubernetes resources
+    - Pods, Deployments, Services
+    - Labels
+    - Jobs, DaemonSets
+- Basic troubleshooting
 
 ## Acceptance criteria
 
@@ -29,7 +36,7 @@ If you think you will use Kubernetes professionally, or if you want to gain a mu
 - Hightower, K. (2021) *Kubernetes The Hard Way.* Retrieved 2022-09-10 from <https://github.com/kelseyhightower/kubernetes-the-hard-way>
     - Instructions to set up Kubernetes manually. Anyone running Kubernetes in production should know the platform inside out. This guide helps you to install and configure all the necessary components, which is probably the best way to really understand how it works under the hood.
 
-## 3.1. Set up the lab environment
+## 4.1. Set up the lab environment
 
 - Install the necessary tools on your physical system (see <https://kubernetes.io/docs/tasks/tools/> for instructions on each desktop platform)
     - `minikube`, a tool to set up a local Kubernetes environment. It's probably best to [use VirtualBox as the driver](https://minikube.sigs.k8s.io/docs/drivers/)
@@ -54,7 +61,7 @@ If you think you will use Kubernetes professionally, or if you want to gain a mu
     - Remark that there's a command that immediately starts multiple nodes: `minikube start --nodes 3`. However, this command sometimes hangs during execution. Starting nodes individually is more reliable.
     - Also remark that when you're running a multi-node cluster, it may not work very well. When you try to access an application that is running on the cluster, expect that some requests may succeed while others fail.
 
-## 3.2. Basic operation
+## 4.2. Basic operation
 
 At this point, we assume you have a running instance of Minikube with at least a control plane node and that `kubectl` is configured to communicate with that instance.
 
@@ -68,13 +75,13 @@ $ watch -n1 kubectl get all
 
 The `watch` command will repeat the `kubectl` command every second (`-n1`) and show the result.
 
-### 3.2.1. Hello world!
+### 4.2.1. Hello world!
 
 - Create your first deployment following the instructions in the [Hello Minikube tutorial](https://kubernetes.io/docs/tutorials/hello-minikube/#create-a-deployment).
 - Creating a deployment is not sufficient to make an app available to users. You also [need to create a service](https://kubernetes.io/docs/tutorials/hello-minikube/#create-a-service).
 - Check that you can view the app in a webbrowser.
 
-### 3.2.2. Working with manifest files
+### 4.2.2. Working with manifest files
 
 Usually, you won't be deploying applications with commands like you did in the previous step. You would write a manifest file that describes the desired state of all objects that are needed to run the application. Kubernetes manifest files are written in YAML, which should be familiar to you by now!
 
@@ -86,7 +93,7 @@ In the directory [../kubernetes/3.2.2](../kubernetes/3.2.2), you will find examp
 
 You will notice that in the last file, some lines only contain `---`. This is YAML syntax to mark the beginning of a new "document" (in YAML terminology). This way, you can combine the definitions of all Kubernetes objects that you want to create in a single YAML file.
 
-Let's deploy the application using the separate files first. Open a terminal in directory `3.2.2/` and follow the instructions below. Be sure to check the result after each command, or use the trick with the `watch` command introduced previously.
+Let's deploy the application using the separate files first. Open a terminal in directory `4.2.2/` and follow the instructions below. Be sure to check the result after each command, or use the trick with the `watch` command introduced previously.
 
 ```console
 $ kubectl apply -f echo-deployment.yml
