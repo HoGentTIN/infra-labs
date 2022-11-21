@@ -58,10 +58,10 @@ If you think you will use Kubernetes professionally, or if you want to gain a mu
         ```
 
     - Start the Dashboard with `minikube dashboard`
-- **Optionally,** use the command `minikube node add` to spin up two extra nodes so you have an actual cluster with a control plane node and two workers.
+- **Optionally,** issue the command `minikube node add` twice to spin up two extra nodes so you have an actual cluster with a control plane node and two workers.
     - By default, Minikube runs a single Kubernetes (control plane) node. For the purpose of this lab assignment, that's sufficient, but you will get a better feel of how a multi-node cluster works in a multi-node environment (control plane + worker nodes).
     - Remark that there's a command that immediately starts multiple nodes: `minikube start --nodes 3`. However, this command sometimes hangs during execution. Starting nodes individually is more reliable.
-    - Also remark that when you're running a multi-node cluster, it may not work very well. When you try to access an application that is running on the cluster, expect that some requests may succeed while others fail.
+    - Also remark that when you're running a multi-node cluster, Minikube doesn't handle LoadBalancer access (which is the standard way to expose an application to the internet on a production cluster) very well. If you want to access a web application running on your cluster, you will probably need to enter the IP address of the node that actually runs the application Pod.
 
 ## 4.2. Basic operation
 
@@ -74,6 +74,8 @@ You can get an near real-time view on what happens on your cluster by issuing th
 ```console
 $ watch -n1 kubectl get all
 ```
+
+Add option `-o wide` if you want to see on which node each
 
 The `watch` command will repeat the `kubectl` command every second (`-n1`) and show the result.
 
@@ -92,17 +94,20 @@ In the directory [../kubernetes/4.2](../kubernetes/4.2), you will find examples 
 - [echo-deployment.yml](../kubernetes/4.2/echo-deployment.yml): describes a deployment for the echo app from the previous step
 - [echo-service.yml](../kubernetes/4.2/echo-service.yml): describes a service for the echo app
 - [echo-all.yml](../kubernetes/4.2/echo-all.yml): a file containing both the deployment and service definition.
+    - This Deployment also contains a ReplicaSet that ensures two pods are running at all times
 
 You will notice that in the last file, some lines only contain `---`. This is YAML syntax to mark the beginning of a new "document" (in YAML terminology). This way, you can combine the definitions of all Kubernetes objects that you want to create in a single YAML file.
 
-Let's deploy the application using the separate files first. Open a terminal in directory `4.2.2/` and follow the instructions below. Be sure to check the result after each command, or use the trick with the `watch` command introduced previously.
+Let's deploy the application using the separate files first. Open a terminal in directory `4.2/` and follow the instructions below. Be sure to check the result after each command, or use the trick with the `watch` command introduced previously.
 
 ```console
 $ kubectl apply -f echo-deployment.yml
 $ kubectl apply -f echo-service.yml
 ```
 
-This will first create the Deployment and launch the pods. The second command ensures that the app is available for users. You can do the same thing in one go by combining the code of both files into a single file.
+This will first create the Deployment and launch the pods. The second command ensures that the app is available for users. When the Service is active, you should be able to view the application in a web browser with `minikube service echo-service`, or by surfing to `http://IP_ADDRESS:PORT` where `IP_ADDRESS` is the IP address of the node where the pod is running and `PORT` is the port number mentioned when you list the service with `kubectl get service`
+
+You can do the same thing in one go by combining the code of both files into a single file.
 
 ```console
 $ kubectl apply -f echo-all.yml
@@ -118,7 +123,7 @@ If you want to make a change to an existing Kubernetes object, edit the manifest
 $ kubectl apply -f <manifest-file.yml>
 ```
 
-For example, increase the number of replicas of the echoserver app (currently only 1) in the manifest file `echo-all.yml`, and apply the change. Check whether this operation was successful and find out on which node each pod is running (which command can you use for this?). Try to send multiple requests to the service (e.g. curl in a for loop) and check whether all pods process requests by looking at the logs of each pod (with which command?).
+For example, increase the number of replicas of the echoserver app (currently two) in the manifest file `echo-all.yml`, and apply the change. Check whether this operation was successful and find out on which node each pod is running (which command can you use for this?). Try to send multiple requests to the service (e.g. curl in a for loop) and check whether all pods process requests by looking at the logs of each pod (with which command?).
 
 **Optional:** If one of the nodes in the cluster becomes unavailable (e.g. `minikube node stop minikube-m03). What happens? Is the application still available? Are the pods still running? Is a pod automatically rescheduled to another node? What if you restart the node? Will the cluster "heal" itself completely or not?
 
@@ -128,7 +133,7 @@ When you use Kubernetes in production, your environment will quickly become quit
 
 In order to make sense of it all, you can add labels to all Kubernetes objects that you create. A label is nothing more than a key-value pair, both of which can be chosen freely. For example, you could define a key `environment` with possible values `development`, `acceptance` and `production`. If you consequently add the `environment` label to all pods that you launch, you can list e.g. all pods that are part of the `development` environment with so-called Selectors.
 
-You can view labels with the command `kubectl get <item-type> --add-labels`. List the currently running pods with their labels.
+You can view labels with the command `kubectl get <item-type> --show-labels`. List the currently running pods with their labels.
 
 You can search for Kubernetes resources with specific labels using the `--selector` or `-l` option, e.g.:
 
@@ -186,4 +191,12 @@ Launch the pods by applying the manifest file.
 - Select pods owned by the API-team with release version 2.0
 - Delete all pods in the development environment
 - What is the quickest way to launch the pods you just deleted?
+
+## 4.4. Deploy a multi-tier web application
+
+Open the Kubernetes documentation site in a webbrowser and follow the tutorial [Deploying PHP Guestbook application with Redis](https://kubernetes.io/docs/tutorials/stateless-application/guestbook/). Keep lab notes!
+
+## 4.5. Clean up
+
+When you're done with the lab assignment, you can clean up all Kubernetes resources currently running on the cluster. What is the quickest way to delete all objects?
 
