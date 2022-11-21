@@ -9,11 +9,9 @@ The goal of this assignment is to become familiar with [Kubernetes](https://kube
     - Applying changes using manifest files
 - Being able to manipulate Kubernetes resources
     - Pods
-    - Controllers:
-        - ReplicaSets, Deployments, Services
-        - Jobs, DaemonSets
-    - Organising applications: Labels, Selectors, Namespaces
-- Basic troubleshooting
+    - Controllers: ReplicaSets, Deployments, Services
+    - Organising applications: Labels, Selectors
+- Deploying a multi-tier application on a Kubernetes cluster
 
 ## Acceptance criteria
 
