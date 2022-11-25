@@ -105,7 +105,7 @@ $ kubectl apply -f echo-deployment.yml
 $ kubectl apply -f echo-service.yml
 ```
 
-This will first create the Deployment and launch the pods. The second command ensures that the app is available for users. When the Service is active, you should be able to view the application in a web browser with `minikube service echo-service`, or by surfing to `http://IP_ADDRESS:PORT` where `IP_ADDRESS` is the IP address of the node where the pod is running and `PORT` is the port number mentioned when you list the service with `kubectl get service`
+This will first create the Deployment and launch the pods. The second command ensures that the app is available for users. When the Service is active, you should be able to view the application in a web browser with `minikube service echo-service`, or by surfing to `http://IP_ADDRESS:PORT` where `IP_ADDRESS` is the IP address of the node where the pod is running and `PORT` is the port number mentioned when you list the service with `kubectl get service`.
 
 You can do the same thing in one go by combining the code of both files into a single file.
 
@@ -161,7 +161,7 @@ Add the label `application_type=demo` to the three pods that are part of the Dep
 
 Try to change the `application_type` of one of the three pods to another value without the `--overwrite` option and note the error message. Add the option so the change is actually made.
 
-Try to delete all pods with `application_type` equals to `demo`. Since this Deployment has a ReplicaSet that ensures 3 pods are launched, the deleted pods will be replaced immediately. What do you notice when you look at the labels of the three pods currently running?
+Try to delete all pods with `application_type` equals to `demo`. Since this Deployment has a ReplicaSet that ensures 2 pods are launched, the deleted pods will be replaced immediately. What do you notice when you look at the labels of the three pods currently running?
 
 Remove the `application_type` label from the pod that still has it.
 
