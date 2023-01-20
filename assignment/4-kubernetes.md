@@ -196,5 +196,4 @@ Open the Kubernetes documentation site in a webbrowser and follow the tutorial [
 
 ## 4.5. Clean up
 
-When you're done with the lab assignment, you can clean up all Kubernetes resources currently running on the cluster. What is the quickest way to delete all objects?
-
+When you're done with the lab assignment (**and only after you successfully demonstrated your setup!**) you can clean up all Kubernetes resources currently running on the cluster. What is the quickest way to delete all objects?
