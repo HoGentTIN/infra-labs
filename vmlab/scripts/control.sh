@@ -22,9 +22,12 @@ source ${PROVISIONING_SCRIPTS}/util.sh
 
 #---------- Provision host ----------------------------------------------------
 
-log "Starting server specific provisioning tasks on ${HOSTNAME}"
+log "Starting server specific provisioning tasks on host ${HOSTNAME}"
 
 log "Installing Ansible and dependencies"
 
-dnf install -y \
+dnf install --assumeyes \
   python3-pip
+
+sudo --login --non-interactive --user=vagrant -- \
+  pip install ansible
