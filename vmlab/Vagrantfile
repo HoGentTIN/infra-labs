@@ -2,10 +2,10 @@
 #
 # This is a generic Vagrantfile that can be used without modification in
 # a variety of situations. Hosts and their properties are specified in
-# `vagrant-hosts.yml`. Provisioning is done by an Ansible playbook,
-# `ansible/site.yml`.
+# `vagrant-hosts.yml`. Provisioning is done by a shell script in the directory
+# `provisioning/` with the same name as the host name.
 #
-# See https://github.com/bertvv/ansible-skeleton/ for details
+# See https://github.com/bertvv/vagrant-shell-skeleton/ for details
 
 require 'rbconfig'
 require 'yaml'
@@ -14,11 +14,10 @@ require 'yaml'
 ENV["LC_ALL"] = "en_US.UTF-8"
 
 # Set your default base box here
-DEFAULT_BASE_BOX = 'bento/centos-7.6'
+DEFAULT_BASE_BOX = 'bento/centos-9'
 
-# When set to `true`, Ansible will be forced to be run locally on the VM
-# instead of from the host machine (provided Ansible is installed).
-FORCE_LOCAL_RUN = false
+# Directory containing VM provisioning scripts
+PROVISIONING_SCRIPT_DIR = 'scripts/'
 
 #
 # No changes needed below this point
@@ -31,18 +30,7 @@ PROJECT_NAME = '/' + File.basename(Dir.getwd)
 vagrant_hosts = ENV['VAGRANT_HOSTS'] ? ENV['VAGRANT_HOSTS'] : 'vagrant-hosts.yml'
 hosts = YAML.load_file(File.join(__dir__, vagrant_hosts))
 
-vagrant_groups = ENV['VAGRANT_GROUPS'] ? ENV['VAGRANT_GROUPS'] : 'vagrant-groups.yml'
-groups = YAML.load_file(File.join(__dir__, vagrant_groups))
-
 # {{{ Helper functions
-
-def run_locally?
-  windows_host? || FORCE_LOCAL_RUN
-end
-
-def windows_host?
-  Vagrant::Util::Platform.windows?
-end
 
 # Set options for the network interface configuration. All values are
 # optional, and can include:
@@ -77,29 +65,6 @@ def custom_synced_folders(vm, host)
   end
 end
 
-# }}}
-
-
-# Set options for shell provisioners to be run always. If you choose to include
-# it you have to add a cmd variable with the command as data.
-#
-# Use case: start symfony dev-server
-#
-# example:
-# shell_always:
-#   - cmd: php /srv/google-dev/bin/console server:start 192.168.52.25:8080 --force
-def shell_provisioners_always(vm, host)
-  if host.has_key?('shell_always')
-    scripts = host['shell_always']
-
-    scripts.each do |script|
-      vm.provision "shell", inline: script['cmd'], run: "always"
-    end
-  end
-end
-
-# }}}
-
 # Adds forwarded ports to your Vagrant machine
 #
 # example:
@@ -116,32 +81,9 @@ def forwarded_ports(vm, host)
   end
 end
 
-def provision_ansible(node, host, groups)
-  ansible_mode = run_locally? ? 'ansible_local' : 'ansible'
-  node.vm.provision ansible_mode do |ansible|
-    ansible.compatibility_mode = '2.0'
-    if ! groups.nil?
-      ansible.groups = groups
-    end
-    ansible.playbook = host.key?('playbook') ?
-        "ansible/#{host['playbook']}" :
-        "ansible/site.yml"
-    ansible.become = true
-
-    # if the host box contains almalinux and we run on a Windows
-    # we need to set the ansible_python_interpreter
-    if host['box'].include? 'almalinux' and run_locally?
-      ansible.extra_vars = {
-        ansible_python_interpreter: "/usr/libexec/platform-python"
-      }
-    end
-  end
-end
-
 # }}}
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  
   hosts.each do |host|
     config.vm.define host['name'] do |node|
       node.vm.box = host['box'] ||= DEFAULT_BASE_BOX
@@ -150,7 +92,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       node.vm.hostname = host['name']
       node.vm.network :private_network, **network_options(host)
       custom_synced_folders(node.vm, host)
-      shell_provisioners_always(node.vm, host)
       forwarded_ports(node.vm, host)
 
       node.vm.provider :virtualbox do |vb|
@@ -162,9 +103,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # host name, this will fail.
         vb.customize ['modifyvm', :id, '--groups', PROJECT_NAME]
       end
-
-      # Ansible provisioning
-      provision_ansible(node, host, groups)
+      
+      # Run provisioning script for the VM, if it exists.
+      provisioning_script = PROVISIONING_SCRIPT_DIR + host['name'] + '.sh'
+      if File.exist?(provisioning_script)
+        node.vm.provision 'shell', path: provisioning_script
+      end
     end
   end
 end

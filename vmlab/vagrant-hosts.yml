@@ -5,10 +5,10 @@
 # <https://github.com/bertvv/ansible-skeleton>
 ---
 
-- name: srv010
-  ip: 172.16.128.10
+- name: control
+  ip: 172.16.128.253
   netmask: 255.255.0.0
-  box: bento/almalinux-8
+  box: bento/almalinux-9
 
 # Example of a more elaborate host definition
 # - name: srv002
