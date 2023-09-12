@@ -85,7 +85,19 @@ To check whether Ansible can communicate with the VM, execute the following comm
 ansible -i inventory.yml -m ping srv010
 ```
 
-**Remark:** From here on out, you can assume that the command `vagrant` should always be executed from your physical system, in your preferred shell (Bash, Git Bash, PowerShell, ...) and from the directory `vmlabs/` (containing the file `Vagrantfile`). All Ansible commands should be executed from within the control node, from the directory `/vagrant/ansible/`.
+If this works, you can have Ansible lookup all kinds of information about the managed node with the `setup` module:
+
+```console
+ansible -i inventory.yml -m setup srv010
+```
+
+The result will be a long list of facts about the managed node. You can also limit the output to a specific fact by specifying the fact name with the `-a` option:
+
+```console
+ansible -i inventory.yml -m setup -a "filter=ansible_distribution*" srv010
+```
+
+**Remark:** From here on out, you can assume that the command `vagrant` should always be executed from your physical system, in your preferred shell (Bash, Git Bash, PowerShell, ...) and from the directory `vmlabs/` (containing the file `Vagrantfile`). All Ansible commands should be executed from within the control node, from the directory `/vagrant/ansible/` (containing the `site.yml` playbook).
 
 ## 2.3 Applying a role to a managed node
 
@@ -180,8 +192,6 @@ where you replace USER with your chosen username (case-sensitive!) and the IP ad
 Since the previous changes were applied to `group_vars/servers.yml`, every VM that we will add to this will automatically have these same properties.
 
 ## 2.4. Web application server
-
-**TODO:** change this assignment: bertvv.httpd/mariadb/wordpress are de facto depcrecated. Replace with a better example of a LAMP stack with an open source webapp (not necessarily Wordpres, not necessarily PHP), preferably with a decent Ansible role available. If that doesn't seem to exist, just install MySQL/MariaDB and Apache (e.g. using Jeff Geerling's roles) and have students write a simple PHP page that loads data from a database.
 
 Next, we will configure `srv010` as a web application server. In this assignment, we'll use the `bertvv.rh-base` role to install the necessary packages and start the corresponding services. For a "production environment", you'll probably be using an existing role, or write your own full-fledged role.
 
@@ -473,9 +483,9 @@ Finally, make sure the running configuration is not lost after rebooting the rou
 
 ## 2.8. Integration: a working LAN
 
-**TODO:** rewrite this part: control node install script should be updated so that it will install all required nodes/collections and apply the site.yml playbook. This ensures that the entire environment is set up entirely automatically. The control node should be last in the vagrant file, so that it is created last and thus has all other VMs already exist when it runs the Ansible playbook.
-
 We now have set up all components for a working local network. The final step is to put them all together by booting the router and all VMs. Remark that our setup uses up a lot of RAM, so this will only work if you have enough physical RAM (at least 16 GB recommended).
+
+### 2.8.1. Adding a "workstation" VM
 
 To test whether the LAN actually works, configure a new VirtualBox VM manually and use a pre-configured .ova (e.g. [Kali Linux](https://www.kali.org/get-kali/#kali-virtual-machines), or your favourite Linux distribution from [osboxes.org](https://www.osboxes.org/)). This workstation VM should have enough RAM and processor cores to boot into a graphical user interface and one network adapter. Attach the adapter to the VirtualBox Host-only Interface used by the other VMs in your lab environment.
 
@@ -486,6 +496,12 @@ If you boot the VM:
 - You should be able to view the website on `srv010` by entering `https://www.infra.lan/wordpress/` in the web browser.
 
 Verify that the IP address is in the correct range (the one reserved for guests with a dynamic IP). Reconfigure the DHCP server so your workstation VM will receive a reserved IP address (also in the correct range!).
+
+### 2.8.2. Reproducible builds
+
+This is probably the most scary part of the assignment. You will now destroy all VMs (`vagrant destroy`) and rebuild them from scratch (`vagrant up`). Before you do, make sure you have committed all changes to your playbooks and variable foles to your Git repository! Also, update the provisioning script of the control node so that it also installs the roles specified in `requirements.yml` and runs the `site.yml` playbook on all VMs. If the control node is the last one in the `vagrant-hosts.yml` file, all managed nodes already exist and the playbook should be able to run correctly. Run the playbook a second time to ensure it is idempotent.
+
+This is a good test to see whether your configuration is reproducible. If you did everything correctly, you should end up with a working LAN again!
 
 ## Reflection
 
