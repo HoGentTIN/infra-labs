@@ -97,8 +97,9 @@ Edit `ansible/site.yml` and add the following:
 
 ```yaml
 ---
-- hosts: all    # Indicate hosts this applies to (host or group name)
-  roles:        # Enumerate roles to be applied
+- name: Configure srv010 # Each task should have a name
+  hosts: srv010          # Indicates hosts this applies to (host or group name)
+  roles:                 # Enumerate roles to be applied
     - bertvv.rh-base
 ```
 
@@ -110,7 +111,7 @@ In order to use this role, you should first install it with the command:
 ansible-galaxy install bertvv.rh-base
 ```
 
-This will download the role and put it in the correct directory (which one?). You will add more roles later, so it's a good idea to have a way install them all at once. This can be done by creating a file `ansible/requirements.yml` with the following contents:
+This will download the role and put it in the correct directory (which one?) so Ansible can make use of it. You will add more roles later, so it's a good idea to have a way install them all at once. This can be done by creating a file `ansible/requirements.yml` with the following contents:
 
 ```yaml
 ---
@@ -182,70 +183,87 @@ Since the previous changes were applied to `group_vars/servers.yml`, every VM th
 
 **TODO:** change this assignment: bertvv.httpd/mariadb/wordpress are de facto depcrecated. Replace with a better example of a LAMP stack with an open source webapp (not necessarily Wordpres, not necessarily PHP), preferably with a decent Ansible role available. If that doesn't seem to exist, just install MySQL/MariaDB and Apache (e.g. using Jeff Geerling's roles) and have students write a simple PHP page that loads data from a database.
 
-Next, we will configure `srv010` as a web application server. We start with the database backend (MariaDB), followed by the web server (Apache) and finally a PHP application (WordPress).
+Next, we will configure `srv010` as a web application server. In this assignment, we'll use the `bertvv.rh-base` role to install the necessary packages and start the corresponding services. For a "production environment", you'll probably be using an existing role, or write your own full-fledged role.
 
-### 2.4.1. MariaDB database server
+### 2.4.1. Installing Apache and MariaDB
 
-Use the `bertvv.mariadb` role to install [MariaDB](https://mariadb.org/) (a fork of MySQL) on the VM and specify the following properties:
+The first step is to install the MariaDB database server, the Apache web server (including support for HTTPS), PHP (including the mysqlnd package for connecting to the database). Look up which packages are necessary and add them to the variable `rhbase_install_packages`.
 
-- create a database for Worpress (e.g. `wordpress`);
-- create a user (e.g. `wordpress`) that has all privileges (except GRANT) on all tables in `wordpress` with a strong, randomized password.
+**Pay attention!** Since these packages are only needed on `srv010`, you should *not* specify them in `servers.yml`. Instead, create a file called `ansible/host_vars/srv010.yml` and define the variable `rhbase_install_packages` there. It is important to realise that we now have two places where `rhbase_install_packages` is defined. Ansible will choose the most specific one, i.e. the one defined in `host_vars/srv010.yml`. That means that you should add the packages specified in `servers.yml` to the list in `host_vars/srv010.yml`!
 
-Verify that the user and database exist by logging in to the MySQL database and showing databases and users:
+At this point you can run the site playbook again to see if all packages are installed correctly.
 
-```console
-[vagrant@srv010 ~]$ sudo mysql -uroot
-Welcome to the MariaDB monitor.  Commands end with ; or \g.
-Your MariaDB connection id is 34
-Server version: 10.3.28-MariaDB MariaDB Server
+### 2.4.2. Make services available
 
-Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+The next step is to make sure that MariaDB and Apache are running and that they will be enabled at boot. Look up the correct variables in the role documentation and set them in `host_vars/srv010.yml`.
 
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+The `rh-base` role also supports configuring the firewall. Ensure that the firewall is configured so that the web server is accessible from the outside world. *Note:* it's best practice to specify *services* allowed through the firewall rather than *port numbers*. Remark that the MariaDB service should *not* be exposed to the outside world! It is only used by the PHP application running on the server itself.
 
-MariaDB [(none)]> show databases;
-+--------------------+
-| Database           |
-+--------------------+
-| wordpress          |
-| information_schema |
-| mysql              |
-| performance_schema |
-+--------------------+
-4 rows in set (0.001 sec)
+Run the playbook again and check the result. Can you access the default web page at <http://172.16.128.10> *and* <https://172.16.128.10>? Is the database server running and can you open a console with `sudo mysql`?
 
-MariaDB [(none)]> select user,host,password from mysql.user;
-+-----------+-----------+-------------------------------------------+
-| user      | host      | password                                  |
-+-----------+-----------+-------------------------------------------+
-| root      | localhost |                                           |
-| root      | 127.0.0.1 |                                           |
-| root      | ::1       |                                           |
-| wordpress | localhost | *D37C49F9CBEFBF8B6F4B165AC703AA271E079004 |
-+-----------+-----------+-------------------------------------------+
-4 rows in set (0.000 sec)
+### 2.4.3. PHP application
 
-MariaDB [(none)]> 
+The directory `ansible/files` contains an SQL script to initialise the database and a PHP-script that queries a database table and shows the result. In this step, we will install the PHP script and ensure that it works correctly when accessed with a web browser.
+
+In `ansible/site.yml`, add a `tasks:` section below `roles:`
+
+```yaml
+- name: Configure srv010
+  hosts: srv010
+  roles:
+    - bertvv.rh-base
+  tasks:
+    # ...
 ```
 
-Also check whether the WordPress database can be accessed by the user.
+An Ansible task is a single action that should be performed on the target system. It is usually structured as follows:
 
-```console
-[vagrant@srv010 ~]$ mysql -uwordpress -pPASSWORD wordpress
-
+```yaml
+- name: Name of the task
+  module.name:
+    parameter1: value1
+    parameter2: value2
 ```
 
-### 2.4.2. Apache web server
+An Ansible module is a piece of code that performs a specific action. The `module.name` is the name of the module that should be executed. The parameters are specific to the module. There are dozens (if not hundreds) of modules for all kinds of purposes. You can find an [index of all modules](https://docs.ansible.com/ansible/latest/collections/index_module.html) in the Ansible documentation. Bookmark this page, you will need it often!
 
-The next step is to install the Apache webserver, using the `bertvv.httpd` role.
+We'll need to perform the tasks enumerated below. First some advice, though: don't try to do everything at once. Start with the first task, run the playbook, make sure it works *and* verify the result before moving on to the next one. Use the Ansible documentation or find a tutorial on how to write playbooks.
 
-The web server should support encrypted communication over HTTPS. When installing HTTPS support for Apache, a default server key and certificate are installed (in `/etc/pki/tls/private` and `/etc/pki/tls/certs`, respectively). [Generate a new (self-signed) certificate](https://www.baeldung.com/openssl-self-signed-cert) and ensure that it is installed on the webserver, and that Apache is configured to use that, rather than the default. Remark that generating the certificate should not be part of your Ansible playbook. Create the certificate once, manually. Then copy the necessary files to the correct location within the directory containing your Ansible playbook (usually a subdirectory `files/`). Your Vagrant/Ansible project directory is mounted inside your VM under `/vagrant/`, so it's easy to copy the generated files to the appropriate directories.
+- Copy the database creation script (db.sql) to the server
+    - Use module `ansible.builtin.copy`
+    - Put the file in `/tmp/`
+- Install the PHP script `test.php`
+    - Use the copy module again
+    - Put the file in the appropriate directory and rename it to `index.php`
+    - Verify that you can see the PHP file in a web browser. It won't show the database contents yet, but you should at least see the page title.
+- Create the database
+    - Use module `community.mysql.mysql_db`
+    - As database name, specify a *variable* `db_name`. The variable is initialised in `host_vars/srv010.yml`. The PHP script contains the expected name for the database.
+        - The syntax for using a variable is `{{ VARIABLE_NAME }}`, so `{{ db_name }}` in this case
+    - Use the suitable module parameters to specify that the database shouls be initialised from the `db.sql` script.
+    - Since we're on the same host as the database, it isn't necessary to specify a host, username or password. We can connect using the parameter `login_unix_socket` and specify the socket file. On RedHat-like systems, this is `/var/lib/mysql/mysql.sock`.
+    - Verify that the database was created correctly by logging in to the database server with `sudo mysql` and executing the command `show databases;` and a select query on one of the tables.
+- Create a database user
+    - Use module `community.mysql.mysql_user`
+    - As name and password, use the variables `db_user` and `db_password` respectively. These are initialised in `host_vars/srv010.yml` with the expected values found in the PHP script.
+    - Ensure that this user has all privileges on the database specified by variable `db_name`
+    - Connect using the `login_unix_socket` parameter
+    - Verify that the database user exists and that it can be used log in to the database with `mysql -uUSER -pPASSWORD DATABASE` (replace USER, PASSWORD and DATABASE with the correct values), and that you can show the tables and contents.
 
-Verify that the website is available to users by surfing to the appropriate IP address in a web browser on your physical system. Don't forget that you may have to configure the firewall (`bertvv.rh-base` supports this).
+After these steps, you should see the contents of the database when you open the PHP script in a web browser:
 
-### 2.4.3. WordPress
+![PHP script showing database contents](img/4-website.png)
 
-Finally, use the `bertvv.wordpress` role to install WordPress on the VM. The WordPress site should be visible under `https://IP_ADDRESS/wordpress/`.
+### 2.4.4. Idempotency
+
+If you run the playbook again, you will notice that the database is re-initialised. Unfortunately, the `mysql_db` module is not *idempotent* when you use the import option. This means that the module will always execute the import script, even if the database already exists. This is not what we want! We only want to execute the import script when we first copy the initialisation script to the server.
+
+There are two ways to solve this problem:
+
+- Redefine the task that creates the database as a "handler". When you copy the database script, "notify" the handler. The handler will only be executed when the task is notified. [Read about handlers](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html) in the Ansible documentation.
+- In the copy task, use the "register" option to store the result of the task in a variable. Then, in the task that creates the database, use the "when" option to only execute the task when the result has changed. [Read about conditionals](https://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html) in the Ansible documentation.
+
+Implement either method so your playbook becomes idempotent.
 
 ## 2.5. DNS
 
@@ -472,6 +490,8 @@ Change the playbook so the Router hostname is set to `r001`. Execute the playboo
 Finally, make sure the running configuration is not lost after rebooting the router. Add a new task to the playbook, execute it and verify that you're still able to ping the router from e.g. your physical machine.
 
 ## 2.8. Integration: a working LAN
+
+**TODO:** rewrite this part: control node install script should be updated so that it will install all required nodes/collections and apply the site.yml playbook. This ensures that the entire environment is set up entirely automatically. The control node should be last in the vagrant file, so that it is created last and thus has all other VMs already exist when it runs the Ansible playbook.
 
 We now have set up all components for a working local network. The final step is to put them all together by booting the router and all VMs. Remark that our setup uses up a lot of RAM, so this will only work if you have enough physical RAM (at least 16 GB recommended).
 
