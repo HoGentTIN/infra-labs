@@ -269,32 +269,19 @@ Implement either method so your playbook becomes idempotent.
 
 In the next part, you will use the Ansible role `bertvv.bind` to configure a **new** server `srv001` as a DNS server. The role's primarily purpose is to set up an authoritative-only name server that only replies to queries within its own domain. However, it is possible to configure it as a caching name server that either forwards requests to another DNS server, or replies to queries that have been cached.
 
-Don't forget basic security settings, specifically the firewall!
+Don't forget basic security settings, specifically the firewall! Use the `rh-base` role to configure the firewall so that the DNS server is accessible from the outside world.
 
-### Creating the new server
+### 2.5.1. Adding a new VM
 
-Before you can start configuring `srv001` as a DNS server, you first need to create it. Have a look at the `vagrant-hosts.yml` file in the `vmlab` folder. You'll see the configuration for `srv010`, which you've used up until now. Note there is an example of a more elaborate host definition. It shows how to limit the number of CPUs, the amount of RAM, etc.
+Before you can start configuring `srv001` as a DNS server, you first need to create it. Add an entry to `vmlab/vagrant-hosts.yml` for `srv001`. Use the same Vagrant base box as `srv010`, and assign the correct IP address.
 
-Edit the `vagrant-hosts.yml` file and add a definition for `srv001`. Use the same Vagrant box as `srv010`, and make sure to use the correct IP address.
+Next, add a new section for `srv001` to the `site.yml` file and assign the roles `bertvv.rh-base` and `bertvv.bind`. Don't forget to install this new role on the control node and add it to `requirements.yml`!
 
-Next, make some changes to the `site.yml` file:
+Create a file `ansible/host_vars/srv001.yml` for defining role variables specific for this host.
 
-- make sure `srv010` only has the following roles:
-    - `bertvv.rh-base`
-    - `bertvv.mariadb`
-    - `bertvv.httpd`
-    - `bertvv.wordpress`
-- add a new section for `srv001` and assign these roles:
-    - `bertvv.rh-base`
-    - `bertvv.bind`
+### 2.5.2. Caching name server
 
-Both servers share the `bertvv.rh-base` role. How can you write this better?
-
-You probably put every role variable inside `group_vars/all.yml`. It works, but it's better to split variables based on host or group name. Split your `group_vars/all.yml` into separate files for each host. Note that every server shares the `bertvv.rh-base` role and thus shares the same role variables. Do not duplicate them in the new host variable files.
-
-### Caching name server
-
-Let's now start configuring the new server as a caching nameserver without any authoritative zones. Define the necessary role variables to:
+Let's now start configuring the new server as a caching nameserver without any authoritative zones. Define the necessary role variables (peruse the role documentation!) to:
 
 - allow any host to send a query to this DNS server
 - allow recursion
@@ -315,7 +302,7 @@ If the service is running, check the following:
 - send a query from your physical system and check if it responds
 - check the logs again, can you see which queries were sent a what response the server gave?
 
-### Authoritative name server
+### 2.5.3. Authoritative name server
 
 If your DNS server is available to other hosts in the network, you can move on to the next part, which consists of adding a zone file for our domain, `infra.lan`. Define the variable `bind_zones` and specify:
 
@@ -365,7 +352,7 @@ There are some Vagrant base boxes for router OSs, but most don't work very well.
 
 Be aware that the router VM takes 4 GB of RAM!
 
-### Create and boot the router VM
+### 2.7.1. Create and boot the router VM
 
 - Import the OVA file in VirtualBox and, optionally, put it in the `vmlab` group (that was automatically created by Vagrant)
 - Copy or move the .iso file to the directory that contains the VM (should be something like `${HOME}/VirtualBox VMs/vmlab/CSR1000v`, with `${HOME}` your user's home directory, i.e. `c:\Users\USERNAME` on Windows, `/Users/USERNAME` on Mac or `/home/USERNAME` on Linux).
@@ -394,7 +381,7 @@ Be aware that the router VM takes 4 GB of RAM!
 CSR1kv>
 ```
 
-### Check the default configuration
+### 2.7.2. Check the default configuration
 
 Verify the router configuration by showing an overview of the network interfaces and the routing table. Check the port forwarding rules on the NAT interface. Specifically, find on what port SSH traffic is forwarded to. Verify that you can log in on your router with SSH by opening a Bash terminal on your physical system and executing the following command (replace PORT by the forwarded SSH port number of the VM's NAT adapter), and using password `cisco123!`:
 
@@ -419,16 +406,15 @@ Password:
 CSR1kv#
 ```
 
-### Managing the router with Ansible
+### 2.7.3. Managing the router with Ansible
 
-In order to manage this VM with Ansible, we will need to create an [inventory file](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html). This file contains an overview of all the machines that can be controlled with Ansible, with directions on how to log in, how to get administrator privileges, etc. We haven't talked about this yet, because Vagrant conveniently creates an inventory file for us automatically, and uses it whenever we issue the `vagrant provision` command. Find the inventory file created by Vagrant (tip: it's somewhere inside the `.vagrant/` subdirectory).
-
-We will create an inventory file in Yaml, which is the preferred file format in recent Ansible versions. Put the file in the `ansible/` directory.
+In order to manage this VM with Ansible, we will need to update the inventory file. Add a new group `routers` and add the following host to it:
 
 ```yaml
-# Inventory file for accessing a Cisco CSR1000v VirtualBox VM
 ---
-all:
+servers:
+  # ...
+routers:
   hosts:
     CSR1kv:
       ansible_connection: "ansible.netcommon.network_cli"
@@ -439,17 +425,13 @@ all:
       ansible_password: "cisco123!"
 ```
 
-You could add the contents of Vagrant's inventory file to this one if you want to control all VMs directly with Ansible instead of always executing `vagrant provision`.
-
 Test whether this works by executing the following command:
 
 ```console
 ansible -i inventory.yml -m ios_facts -a "gather_subset=all" all
 ```
 
-You should get a lot of output with an overview of the router's configuration. Windows users can't do this from their physical system and should log in to one of their Vagrant VMs that should have Ansible installed, and go to the directory that contains the inventory file (somewhere under `/vagrant`).
-
-The `ansible` command can run so-called Ansible modules, the basic building blocks of playbooks, directly from the command-line. The `ios_facts` module will gather information about the Cisco device under control and print it out in JSON format.
+You should get a lot of output with an overview of the router's configuration in JSON format.
 
 ### Writing the playbook
 
