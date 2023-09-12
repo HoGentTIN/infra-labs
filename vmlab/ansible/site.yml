@@ -1,4 +1,2 @@
 # site.yml
 ---
-- hosts: all
-  roles: []

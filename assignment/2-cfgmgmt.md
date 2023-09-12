@@ -2,18 +2,19 @@
 
 The goal of this assignment is to set up a complete local network (domain name `infra.lan`) with some typical services: a web application server (e.g. to host an intranet site), DHCP and DNS. A router will connect the LAN to the Internet. The table below lists the hosts in this network:
 
-| Host name         | Alias | IP             | Function         |
-| :---------------- | :---- | :------------- | :--------------- |
-| (physical system) |       | 172.16.0.1     | Your physical pc |
-| r001              | gw    | 172.16.255.254 | Router           |
-| srv001            | ns    | 172.16.128.2   | DNS              |
-| srv003            | dhcp  | 172.16.128.3   | DHCP server      |
-| srv010            | www   | 172.16.128.10  | Webserver        |
-| ws0001            |       | (DHCP)         | workstation      |
+| Host name         | Alias | IP             | Function             |
+| :---------------- | :---- | :------------- | :------------------- |
+| (physical system) |       | 172.16.0.1     | Your physical pc     |
+| r001              | gw    | 172.16.255.254 | Router               |
+| srv001            | ns    | 172.16.128.2   | DNS                  |
+| srv003            | dhcp  | 172.16.128.3   | DHCP server          |
+| srv010            | www   | 172.16.128.10  | Webserver            |
+| ws0001            |       | (DHCP)         | workstation          |
+| control           |       | 172.16.128.253 | Ansible control node |
 
 ## Learning goals
 
-- You can automate the setup of network services with a configuration management system
+- You can automate the setup of network services with a configuration management system (Ansible)
 - You can install and configure reproducible virtual environments (Infrastructure as Code) with suitable tools for the automation of the entire lifecycle of a VM
 
 ## Acceptance criteria
@@ -22,15 +23,75 @@ The goal of this assignment is to set up a complete local network (domain name `
 - When connecting a workstation VM to the network, it should get correct IP settings and should be able to view the local website (using the hostname, not the IP address) and have internet access.
 - You should be able to ping the hosts in the network by host name (rather than IP address) from the workstation VM.
 
-## 2.1. Set up the lab environment
+## 2.1. Set up the control node
 
-Go to the `vmlab` directory and start the Vagrant environment, currently consisting of a single VM with host name `srv010` (which will become our web server). The last few lines of the output shows that an Ansible Playbook was run. You can find that playbook in the subdirectory [vmlab/ansible/site.yml](../vmlab/ansible/site.yml). Currently, this playbook is all but empty, so nothing really happens. Verify in the output that no changes were applied to the VM (look for the text `changed=0`).
+Go to the `vmlab` directory and start the Vagrant environment with `vagrant up`. Currently, the environment consists of a single VM with host name `control`. This is the **Ansible control node**. It is the machine from which you will run Ansible to configure the other VMs in the environment.
 
-Check that you can log in to the VM with `vagrant ssh srv010`. What is/are the IP addresses of this VM? Which Linux distribution are we running (command `lsb_release -a`)? Find some information about this distro! What version of the Linux kernel is installed (uname -a)?
+Check that you can log in to the VM with `vagrant ssh control`.
 
-## 2.2. Basic server setup
+- What is/are the IP addresses of this VM?
+- Check the VirtualBox network adapters of the VM and see if you can match the IP addresses with the VirtualBox adapter.
+- Which Linux distribution are we running (command `lsb_release -a`)? Find some information about this distro!
+- What version of the Linux kernel is installed (uname -a)?
+- What version of Ansible is installed?
+- Check the contents of the direcory `/vagrant/`.
 
-The easiest way to configure a VM is to apply a [role](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html). A role is a playbook that is written to be reusable. It contains a general description of the desired state of the target system, and you can customize it for your specific case by setting role variables.
+    The contents of this directory correspond with the `vmlab/` directory on your physical system. In fact, it is a shared directory, so changes you make on your physical system are immediately visible on the VM and vice versa.
+
+You can start using the control node to execute Ansible commands. Ensure that you're in the correct directory (`/vagrant/ansible/`) before you do!
+
+Feel free to improve the configuration of the control node to your liking. To make your changes persistent, update the Bash script found in `vmlab/scripts/control.sh`. This script is executed every time the VM is created, or when you run `vagrant provision control`. For example, you can install additional useful commands or Ansible dependencies, customize the bashrc file with command aliases or a fancy prompt, run the Ansible playbooks to configure the managed hosts, etc.
+
+## 2.2. Adding a managed node
+
+Next, we are going to set up our first **managed node**, i.e. a host that is managed by Ansible.
+
+Add a new VM named `srv010` (which will become our web server) to the Vagrant environment by editing the `vagrant-hosts.yml` file in the `vmlab` directory.
+
+```yaml
+- name: srv010
+  ip: 172.16.128.10
+  netmask: 255.255.0.0
+  box: bento/almalinux-9
+```
+
+Your control node should always be the last VM defined in `vagrant-hosts.yml`. The reason will become apparent at the final stage of this assignment.
+
+Check whether the new VM is recognized by Vagrant by running `vagrant status` and look for the host name in the command output. If it is, start the VM with `vagrant up srv010`. Check that you can log in to the VM with `vagrant ssh srv010`.
+
+In order to communicate with managed nodes, you need to provide Ansible with a list of hosts. This list is called an [inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html). The inventory can be a simple list of host names, but it can also contain additional information like the host's IP address, the user account to log in with, etc. We will use a simple inventory file that contains only the host name of the VM we just created. Create a file `vmlab/ansible/inventory.yml` with the following contents:
+
+```yaml
+---
+servers:
+  variables:
+    ansible_user: vagrant
+    ansible_ssh_private_key_file: ../.vagrant/machines/srv010/virtualbox/private_key
+    ansible_become: true
+  hosts:
+    srv010:
+      ansible_host: 172.16.128.10
+```
+
+The first line with `servers:` defines a group of hosts. All server VMs will be added to this group. Later, we'll add another group for the router VM.
+
+The variables section contains a list of variables that apply to all hosts in the group. The variables `ansible_user` specifies the user that Ansible will use to log in to the managed nodes and run commands. The variable `ansible_ssh_private_key_file` specifies the SSH private key that will be used to log in. This one in particular was generated automatically by Vagrant and is also used when you execute `vagrant ssh`. The variable `ansible_become` specifies that Ansible should use `sudo` to run commands with administrator privileges.
+
+The `hosts` section contains a list of hosts that Ansible can manage. You will extend this list later. The `ansible_host` variable specifies the IP address of the host. This is necessary because the host name `srv010` is not known outside the VM: there is no DNS server available (yet!) that knows how to map host name `srv010` to the specified IP address.
+
+To check whether Ansible can communicate with the VM, execute the following command from within the control node, in the `ansible/` directory:
+
+```console
+ansible -i inventory.yml -m ping srv010
+```
+
+**Remark:** From here on out, you can assume that the command `vagrant` should always be executed from your physical system, in your preferred shell (Bash, Git Bash, PowerShell, ...) and from the directory `vmlabs/` (containing the file `Vagrantfile`). All Ansible commands should be executed from within the control node, from the directory `/vagrant/ansible/`.
+
+## 2.3 Applying a role to a managed node
+
+Configuring a managed node with Ansible is done by executing a [playbook](https://docs.ansible.com/ansible/latest/playbook_guide/index.html). A playbook is a [YAML](https://yaml.org) file that contains a list of tasks that should be executed on the target system. In our setup, the main playbook is called `site.yml`. It is all but empty now, but you will add to it later.
+
+The easiest way to configure a VM is to apply an existing [role](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html). A role is a playbook that is written to be reusable. It contains a general description of the desired state of the target system, and you can customize it for your specific case by setting role variables.
 
 Edit `ansible/site.yml` and add the following:
 
@@ -43,25 +104,42 @@ Edit `ansible/site.yml` and add the following:
 
 The role [bertvv.rh-base](https://galaxy.ansible.com/bertvv/rh-base) is one that is published on [Ansible Galaxy](https://galaxy.ansible.com/), a public repository of Ansible roles. It does some basic configuration tasks for improving security (like enabling SELinux and starting the firewall) and allows the user to specify some desired configuration options like packages to install, users or groups to create, etc. by initializing some role variables. See the role documentation either on Ansible Galaxy (click the Read Me button) or in the role's [public GitHub repository](https://github.com/bertvv/ansible-role-rh-base). It contains an overview of all supported role variables and how to use them.
 
-When you execute the command `vagrant provision srv010`, the playbook `site.yml` will be executed and the role will be applied to the VM. Check the output to verify that some changes (how many and which ones?) were applied to the system.
-
-At this time, the Ansible run will fail, since the `bertvv.rh-base` role is not available. When you mention a role name in your playbook, Ansible will check if that role is installed, either in a subdirectory `ansible/roles/` (relative to the playbook), or in a default directory where you can keep Ansible configuration files (normally `~/.ansible/roles/`). Normally, you would use the `ansible-galaxy` command to install roles that were published on Ansible Galaxy. However, this poses a problem for Windows users who cannot install the `ansible-galaxy` command. Therefore, a script is provided that will download the necessary roles and put them in the correct directory.
-
-The script can be found in `vmlab/scripts/role-deps.sh`. It will look in `site.yml` for any mention of a role that should be downloaded from Ansible Galaxy. These are notated in the `user.rolename` format. In order to work, the site.yml file must be formatted correctly. Specifically, ensure that you respect indentation rules of the YAML format.
-
-Run the script from the `vmlab` directory:
+In order to use this role, you should first install it with the command:
 
 ```console
-$ ./scripts/role-deps.sh
-[...]
+ansible-galaxy install bertvv.rh-base
 ```
 
-After that, run `vagrant provision` again and check that the role is applied correctly.
-
-Variables can be set in a playbook itself, but this would quickly make it very hard to read. However, you can create separate variable files on some default locations, either in a subdirectory `ansible/group_vars/`  or `ansible/host_vars/`. Host variables will only be visible inside that specific host. For `srv010`, this host variable file should be called `ansible/host_vars/srv010.yml`. Hosts can be ordered into groups, but at this time, this is outside the scope of this assignment. However, there is one special group, called `all`, that contains all hosts that can be managed by Ansible (for now, only `srv010`). This variable file should be called `ansible/group_vars/all.yml`, which is already created. Open this file and add the following content:
+This will download the role and put it in the correct directory (which one?). You will add more roles later, so it's a good idea to have a way install them all at once. This can be done by creating a file `ansible/requirements.yml` with the following contents:
 
 ```yaml
-# ansible/group_vars/all.yml
+---
+roles:
+  - name: bertvv.rh-base
+```
+
+You can install all roles listed in this file with the command:
+
+```console
+ansible-galaxy install -r requirements.yml
+```
+
+Add all roles you will use in this lab assignment to this file. You can also add this command to the `vmlab/scripts/control.sh` script, so the roles are installed automatically when you create the control node!
+
+Next, run the `site.yml` playbook with command:
+
+```console
+ansible-playbook -i inventory.yml site.yml
+```
+
+Watch the output and see what happens, specifically, which changes were made to the system. If the playbook ran without errors, run it again and check that this time, no changes were applied. What is the name of this property that after the first run, the operation does not change the target system anymore?
+
+The role `bertvv.rh-base` performs several operations to configure the managed node to some desired state. It is possible to customize this desired state by setting so-called role variables. Well written roles have good documentation that explains which variables are available and how to use them. The documentation for `bertvv.rh-base` can be found on [Ansible Galaxy](https://galaxy.ansible.com/bertvv/rh-base) (click on the README button) or in the role's [public GitHub repository](https://github.com/bertvv/ansible-role-rh-base).
+
+Variables can be set in a playbook itself, but this would quickly make it very hard to read. It is best practice to initialise variables in a separate file. Ansible looks for variables in some default locations, either in a subdirectory `ansible/group_vars/`  or `ansible/host_vars/`. Host variables will only be visible inside that specific host. For `srv010`, this host variable file should be called `ansible/host_vars/srv010.yml`. Hosts can be ordered into groups, but at this time, this is outside the scope of this assignment. However, there is one special group, called `all`, that contains all hosts that can be managed by Ansible (for now, only `srv010`). This variable file should be called `ansible/group_vars/all.yml`, which is already created. We created a `server` group, so those variables should be stored in `ansible/group_vars/servers.yml`. Open this file and add the following content:
+
+```yaml
+# ansible/group_vars/servers.yml
 ---
 rhbase_repositories:
   - epel-release
@@ -70,12 +148,12 @@ rhbase_install_packages:
   - vim-enhanced
 ```
 
-These variables will result in the following changes:
+These variables will result in the following changes (check the role documentation for details!):
 
 - The package repository EPEL (Extra Packages for Enterprise Linux) is installed and enabled
 - The software packages `bash-completion` and `vim-enhanced` are installed
 
-Run `vagrant provision srv010` again to bring the VM to the new desired state. Check the output to verify the changes.
+Run the playbook again to bring the VM to the new desired state. Check the output to verify the changes.
 
 Update the variable file so the following useful packages are also installed:
 
@@ -96,15 +174,17 @@ Re-apply the role and check the changes. Verify that you can SSH into the VM wit
 ssh USER@IP_ADDRESS
 ```
 
-where you replace USER with your chosen username (case-sensitive!) and the IP address of your VM on interface `eth1` (starts with 172). The first time you do this, you will get a warning that the authenticity of this host can't be established. Enter `yes` to confirm that you want to continue connecting.
+where you replace USER with your chosen username (case-sensitive!) and the IP address of your VM on interface `eth1` (starts with 172). The first time you do this, you will get a warning that the authenticity of this host can't be established. Enter `yes` to confirm that you want to continue connecting. You should also be able to log in from your Ansible control node!
 
-Since the previous changes were applied to `group_vars/all.yml`, every VM that we will add to our environment will automatically have these properties.
+Since the previous changes were applied to `group_vars/servers.yml`, every VM that we will add to this will automatically have these same properties.
 
-## 2.3. Web application server
+## 2.4. Web application server
+
+**TODO:** change this assignment: bertvv.httpd/mariadb/wordpress are de facto depcrecated. Replace with a better example of a LAMP stack with an open source webapp (not necessarily Wordpres, not necessarily PHP), preferably with a decent Ansible role available. If that doesn't seem to exist, just install MySQL/MariaDB and Apache (e.g. using Jeff Geerling's roles) and have students write a simple PHP page that loads data from a database.
 
 Next, we will configure `srv010` as a web application server. We start with the database backend (MariaDB), followed by the web server (Apache) and finally a PHP application (WordPress).
 
-### 2.3.1. MariaDB database server
+### 2.4.1. MariaDB database server
 
 Use the `bertvv.mariadb` role to install [MariaDB](https://mariadb.org/) (a fork of MySQL) on the VM and specify the following properties:
 
@@ -155,7 +235,7 @@ Also check whether the WordPress database can be accessed by the user.
 
 ```
 
-### 2.3.2. Apache web server
+### 2.4.2. Apache web server
 
 The next step is to install the Apache webserver, using the `bertvv.httpd` role.
 
@@ -163,11 +243,11 @@ The web server should support encrypted communication over HTTPS. When installin
 
 Verify that the website is available to users by surfing to the appropriate IP address in a web browser on your physical system. Don't forget that you may have to configure the firewall (`bertvv.rh-base` supports this).
 
-### 2.3.3. WordPress
+### 2.4.3. WordPress
 
 Finally, use the `bertvv.wordpress` role to install WordPress on the VM. The WordPress site should be visible under `https://IP_ADDRESS/wordpress/`.
 
-## 2.4. DNS
+## 2.5. DNS
 
 In the next part, you will use the Ansible role `bertvv.bind` to configure a **new** server `srv001` as a DNS server. The role's primarily purpose is to set up an authoritative-only name server that only replies to queries within its own domain. However, it is possible to configure it as a caching name server that either forwards requests to another DNS server, or replies to queries that have been cached.
 
@@ -234,7 +314,7 @@ Again, when the service is running, check:
 - send DNS-requests to the service, both from the VM and from your physical system. Check the logs to see whether these queries were received and how the service responded.
 - Try a zone transfer request
 
-## 2.5. DHCP
+## 2.6. DHCP
 
 In a local network, workstations usually get correct IP settings from a DHCP server. In this part of the lab assignment, you will use the Ansible role `bertvv.dhcp` to configure `srv003` as a DHCP server.
 
@@ -256,7 +336,7 @@ Some remarks:
 - Make sure that you don't have an overlap between the address range in your subnet declaration!
 - A subnet declaration's network IP should match the DHCP server's IP address, otherwise the daemon will not start.
 
-## 2.6. Router
+## 2.7. Router
 
 In the previous parts of this lab assignment, we set up several machines that, when put together, can form a fully functioning local network. There's still a component missing, and that is the router that connects this network with the outside world. So, next, we are going to set up a router and configure it using Ansible.
 
@@ -391,7 +471,7 @@ Change the playbook so the Router hostname is set to `r001`. Execute the playboo
 
 Finally, make sure the running configuration is not lost after rebooting the router. Add a new task to the playbook, execute it and verify that you're still able to ping the router from e.g. your physical machine.
 
-## 2.7. Integration: a working LAN
+## 2.8. Integration: a working LAN
 
 We now have set up all components for a working local network. The final step is to put them all together by booting the router and all VMs. Remark that our setup uses up a lot of RAM, so this will only work if you have enough physical RAM (at least 16 GB recommended).
 

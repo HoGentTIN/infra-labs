@@ -27,7 +27,21 @@ log "Starting server specific provisioning tasks on host ${HOSTNAME}"
 log "Installing Ansible and dependencies"
 
 dnf install --assumeyes \
-  python3-pip
+  epel-release
+
+dnf install --assumeyes \
+  bash-completion \
+  bats \
+  bind-utils \
+  mc \
+  psmisc \
+  python3-libselinux \
+  python3-libsemanage \
+  python3-netaddr \
+  python3-pip \
+  python3-PyMySQL \
+  tree \
+  vim-enhanced
 
 sudo --login --non-interactive --user=vagrant -- \
   pip install ansible
