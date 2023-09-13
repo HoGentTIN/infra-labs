@@ -7,5 +7,6 @@
 
 - name: dockerlab
   ip: 192.168.56.20
-  box: bento/ubuntu-20.04
+  box: bento/ubuntu-22.04
   memory: 4096
+  cpus: 2
