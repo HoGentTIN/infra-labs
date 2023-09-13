@@ -18,7 +18,11 @@ The goal of this assignment is to become familiar with [Kubernetes](https://kube
 - Demonstrate that your Kubernetes cluster is running and that you are able to manage it:
     - Open the dashboard to show what's running on the cluster: nodes, pods, services, deployments, etc.
     - Also show these from the command line (using `kubectl`)
-- Show all applications that are running on the cluster, both in the web browser and the resources necessary for each application (Pods, Deployments, Services, etc.)
+- Demonstrate the applications that are running on the cluster:
+    - Show them in the web browser
+    - From the command line, show which resources are used by each application (Pods, Deployments, Services, etc.)
+- Show an example of filtering by label and an operation on the filtered resources (e.g. delete all resources with a certain label)
+- Scale the echo-all deployment to 5 replica's using the manifest file
 - Show your lab notes and cheat sheet with useful commands
 
 ## Additional resources
