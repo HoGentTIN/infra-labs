@@ -493,7 +493,7 @@ If you boot the VM:
 
 - the DHCP-server should provide it with an IP address in the correct range, the correct IP addresses for the default gateway and DNS server.
 - When you open a web browser in the VM, you should have Internet access
-- You should be able to view the website on `srv010` by entering `https://www.infra.lan/wordpress/` in the web browser.
+- You should be able to view the website on `srv010` by entering `https://www.infra.lan/` in the web browser.
 
 Verify that the IP address is in the correct range (the one reserved for guests with a dynamic IP). Reconfigure the DHCP server so your workstation VM will receive a reserved IP address (also in the correct range!).
 
