@@ -33,12 +33,12 @@ You will also need a GitHub repository with a sample application. Create a new G
 2. Copy the starter code from `cicd-sample-app` to some new directory outside this Git repository. Enter the copied directory and initialise it as a Git repository with `git init`. Commit all code (e.g. `git add .; git commit -m "Initial commit of sample application"`).
 3. On GitHub, create a new public repository and record the URL, probably something like `https://github.com/USER/cicd-sample-app/` (with USER your GitHub username).
 4. Link your local repository with the one you created on GitHub: `git remote add origin git@github.com:USER/cicd-sample-app.git` (The GitHub page of your repository will show you the exact command needed for this).
-5. Push the locally committed code to GitHub: `git push -u origin main`
+5. Push the locally committed code to GitHub: `git push -u origin main`. Take extra care on this command and the option main. If you receive an error, read the git error message carefully. Maybe your GitHub account is (still) configured to use master instead of main. 
 
 ## 1.2 Build and verify the sample application
 
 1. Log in to the VM with `vagrant ssh` and go to directory `/vagrant/cicd-sample-app`
-2. Build the application using the `sample-app.sh` script. The build script will likely not be executable, so keep that in mind. Downloading the image may take a while since it's almost 900 MB. After the build is finished, your application should be running as a Docker container.
+2. Build the application using the `sample-app.sh` script. Keep in mind, if the build script is not executable, you should know what to do. Downloading the image may take a while since it's almost 900 MB. After the build is finished, your application should be running as a Docker container.
 3. Verify the app by pointing your browser to <http://192.168.56.20:5050/>. You should see the text "You are calling me from 192.168.56.1" with a blue background.
 4. Stop the container and remove it.
 
@@ -93,7 +93,7 @@ Remark that if you try to run the build job a second time, it will fail. Check t
 
 We will now create another job that runs an acceptance test after the build process has finished.
 
-Before you begin, you need to know the IP address of both the `samplerunning` and `jenkins_server` container. Find the IP address and ensure that the app is available with `curl http://APP_IP:5050/`. The output should contain a line with the client's IP address:
+Before you begin, you need to know the IP address of both the `sampleapp` and `jenkins_server` container. Find the IP address and ensure that the app is available with `curl http://APP_IP:5050/`. The output should contain a line with the client's IP address:
 
 ```text
    <h1>You are calling me from 172.17.0.1</h1>
@@ -118,7 +118,7 @@ Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerla
 
     You could write a bash script that's a bit more useful than the command specified above. For example, if the job fails, the console output will not give you any clue as to why. In case of a failure to find the expected IP address in the output of `curl`, you could print the actual output on the console.
 
-5. The Jenkins dashboard should now list both the build and test job. Stop and remove the `samplerunning` container and then launch the build job.
+5. The Jenkins dashboard should now list both the build and test job. Stop and remove the `samplerunning` container and then launch the build job. If you encounter an error try figuring out what is going on. There are multiple ways to tackle this issue either in Jenkins with a correct configuration option or by carefully improving the sample-app.sh script.
 
 ## 1.7 Create a build pipeline
 
