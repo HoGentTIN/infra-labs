@@ -68,7 +68,7 @@ In order to communicate with managed nodes, you need to provide Ansible with a l
 ```yaml
 ---
 servers:
-  variables:
+  vars:
     ansible_user: vagrant
     ansible_ssh_private_key_file: ../.vagrant/machines/srv100/virtualbox/private_key
     ansible_become: true
