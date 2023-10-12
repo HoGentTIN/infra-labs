@@ -469,7 +469,7 @@ ansible -i inventory.yml -m ios_facts -a "gather_subset=all" all
 
 You should get a lot of output with an overview of the router's configuration in JSON format.
 
-### Writing the playbook
+### 2.7.4. Writing the playbook
 
 Now, we will create the playbook to actually configure our router. Create a file `router-config.yml` in the `ansible/` directory (the one containing the `site.yml` playbook).
 
