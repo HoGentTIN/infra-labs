@@ -185,3 +185,4 @@ And we haven't even discussed any necessary changes to a database schema when ne
 
 - Create a build pipeline for a larger application, e.g. this [todo list app](https://docs.microsoft.com/en-us/visualstudio/docker/tutorials/your-application)
 - Make the lab setup persistent, i.e. when you run `vagrant destroy; vagrant up`, you have a functional Jenkins build server again. The sample application and build pipeline should not necessarily be automatically reproduced.
+- Upgrade your pipeline to a *Continuous Delivery/Deployment* pipeline. Try to configure the task(s) in such a way that a push to main would result in automatically deploying a new version of the static website. In other words no interaction on the jenkins server should be needed anymore to trigger the tasks/jobs.
