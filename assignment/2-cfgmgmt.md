@@ -377,74 +377,48 @@ Some remarks:
 - Make sure that the address range specified in your subnet declaration doesn't overlap with the reserved IP addresses!
 - A subnet declaration's network IP should match the network part of the DHCP server's IP address, otherwise the daemon will not start.
 
-## 2.7. Router
+## 2.7. Managing a router with Ansible
 
-In the previous parts of this lab assignment, we set up several machines that, when put together, can form a fully functioning local network. There's still a component missing, and that is the router that connects this network with the outside world. So, next, we are going to set up a router and configure it using Ansible.
+Next, we will add a router VM to the virtual environment, based on [VyOS](https://vyos.io). VyOS is a Linux-based network operating system. That implies that it also satisfies the necessary requirements for managing it with Ansible, viz. SSH access and Python. Indeed, Ansible has ample [documentation on how to manage VyOS routers](https://docs.ansible.com/ansible/latest/collections/vyos/vyos/index.html).
 
-There are some Vagrant base boxes for router OSs, but most don't work very well. So, for the purpose of this lab assignment, we will have to configure the VM manually. We'll be using a Cisco IOS VM (CSR1000v). If you are enrolled in a Cisco NetAcad academy, you should have access to the following files:
+Additionally, VyOS has some similarities to other well-known network operating systems like Cisco IOS or Juniper OS in the way it is configured. You can familiarize yourself with the specific commands that you will need for this assignment using the [online documentation](https://docs.vyos.io/en/equuleus/).
 
-- `VirtualBox ETW-CSR1000v.ova`: base VirtualBox appliance
-- `csr1000v-universalk9.17.03.02.iso` (or a newer version), the installation ISO for Cisco IOS
+Before downloading a VyOS base box and creating a VM, you should first install the `vagrant-vyos` plugin. This plugin provides the necessary configuration to create a VyOS VM with Vagrant.
 
-Be aware that the router VM takes 4 GB of RAM!
+```bash
+vagrant plugin install vagrant-vyos
+```
+
+In addition, the Vagrant base box provided by the VyOS project does not comply with the convention that there should be a user `vagrant` with password `vagrant` present. Instead, the default user is `vyos` with password `vyos`. Our `Vagrantfile` does not support setting another SSH username and password, so we'll need to implement this. Fortunately, it suffices to add the following two lines to the `Vagrantfile`, [after line 95](https://github.com/HoGentTIN/infra-labs/blob/a7cbd21aae9c0a4f68756df2758133cda6b0906f/vmlab/Vagrantfile#L95):
+
+```ruby
+      # Allow setting a custom SSH username and password
+      node.ssh.username = host['ssh_username'] if host.key? 'ssh_username'
+      node.ssh.password = host['ssh_password'] if host.key? 'ssh_password'   
+```
 
 ### 2.7.1. Create and boot the router VM
 
-- Import the OVA file in VirtualBox and, optionally, put it in the `vmlab` group (that was automatically created by Vagrant)
-- Copy or move the .iso file to the directory that contains the VM (should be something like `${HOME}/VirtualBox VMs/vmlab/CSR1000v`, with `${HOME}` your user's home directory, i.e. `c:\Users\USERNAME` on Windows, `/Users/USERNAME` on Mac or `/home/USERNAME` on Linux).
-- Edit the Network settings of the VM.
-    - By default, you should have a single active network adapter. Attach it to a NAT interface. After booting, an IP address will be assigned by DHCP (which one?)
-    - Enable Adapter 2 and attach it to the Host-only network interface that is also used by your other VMs in this environment. After booting, these interfaces will be set to "administratively down".
-    - The Adapter Type must be set to **Paravirtualized Network (virtio-net)**
-- Boot the VM. You should see a GRUB boot menu. Choose the default option or wait until it is selected automatically.
-- The installation process will now begin. This will probably take a while! The VM will reboot once and the installation-ISO will be ejected. If everything went ok, you should see the following text:
-
-```text
-*                                           *
-**                                         **
-***                                       ***
-***  Cisco Networking Academy             ***
-***   Emerging Technologies Workshop:     ***
-***    Model Driven Programmability       ***
-***                                       ***
-***  This software is provided for        ***
-***   Educational Purposes                ***
-***    Only in Networking Academies       ***
-***                                       ***
-**                                         **
-*                                           *
-
-CSR1kv>
-```
+Add an entry to the `vagrant-hosts.yml` file to create a new VM for the router. Select `vyos/current` as the base box and assign the IP address that can be found in the address table at the beginning of the lab assignment. Add keys `ssh_username` and `ssh_password` with the appropriate values. Boot the VM with `vagrant up`.
 
 ### 2.7.2. Check the default configuration
 
-Verify the router configuration by showing an overview of the network interfaces and the routing table. Check the port forwarding rules on the NAT interface. Specifically, find on what port SSH traffic is forwarded to. Verify that you can log in on your router with SSH by opening a Bash terminal on your physical system and executing the following command (replace PORT by the forwarded SSH port number of the VM's NAT adapter), and using password `cisco123!`:
+Log in to the router VM with `vagrant ssh r001` and check the IP settings. On VyOS, the command is `show interfaces`. Verify that it has the correct IP addresses for both interfaces.
 
 ```console
-$ ssh -o StrictHostKeyChecking=no -p PORT cisco@127.0.0.1
-Password: 
-
-*                                           *
-**                                         **
-***                                       ***
-***  Cisco Networking Academy             ***
-***   Emerging Technologies Workshop:     ***
-***    Model Driven Programmability       ***
-***                                       ***
-***  This software is provided for        ***
-***   Educational Purposes                ***
-***    Only in Networking Academies       ***
-***                                       ***
-**                                         **
-*                                           *
-
-CSR1kv#
+vyos@r001:~$ show interfaces
+Codes: S - State, L - Link, u - Up, D - Down, A - Admin Down
+Interface        IP Address                        S/L  Description
+---------        ----------                        ---  -----------
+eth0             10.0.2.15/24                      u/u
+eth1             172.16.255.254/16                 u/u
+lo               127.0.0.1/8                       u/u
+                 ::1/128
 ```
 
 ### 2.7.3. Managing the router with Ansible
 
-In order to manage this VM with Ansible, we will need to update the inventory file. Add a new group `routers` and add the following host to it:
+In order to manage this VM with Ansible, we will need to update the inventory file. Add a new group `routers` and add an entry for the router VM:
 
 ```yaml
 ---
@@ -452,60 +426,53 @@ servers:
   # ...
 routers:
   hosts:
-    CSR1kv:
-      ansible_connection: "ansible.netcommon.network_cli"
-      ansible_network_os: "ios"
-      ansible_host: "127.0.0.1"
-      ansible_port: 5022
-      ansible_user: "cisco"
-      ansible_password: "cisco123!"
+    r001:
+      ansible_host: 172.16.255.254
+      ansible_user: vyos
+      ansible_ssh_pass: vyos
+      ansible_network_os: vyos
+      ansible_connection: network_cli
 ```
 
-Test whether this works by executing the following command:
+Check whether the VM is reachable with Ansible:
 
 ```console
-ansible -i inventory.yml -m ios_facts -a "gather_subset=all" all
+[vagrant@control ansible]$ ansible -i inventory.yml r001 -m ping
+[WARNING]: ansible-pylibssh not installed, falling back to paramiko
+r001 | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
 ```
 
-You should get a lot of output with an overview of the router's configuration in JSON format.
+(the warning can be ignored)
 
-### 2.7.4. Writing the playbook
-
-Now, we will create the playbook to actually configure our router. Create a file `router-config.yml` in the `ansible/` directory (the one containing the `site.yml` playbook).
+Check if you can retrieve facts about the router with the `vyos_facts` module:
 
 ```console
-# Router configuration playbook
----
-- hosts: CSR1kv
-  tasks:
-    - name: Set interface GE2
-      cisco.ios.ios_l3_interfaces:
-        config:
-          - name: GigabitEthernet2
-            ipv4:
-              - address: IP_ADDRESS
-        state: merged
-    - name: Enable GE2
-      cisco.ios.ios_interfaces:
-        config:
-          - name: GigabitEthernet2
-            enabled: yes
-        state: merged
+[vagrant@control ansible]$ ansible -i inventory.yml r001 -m vyos_facts
 ```
 
-Replace IP_ADDRESS with the actual IP address, in CIDR notation, the router should have.
+### 2.7.4 Writing the playbook
 
-Now, execute the playbook with:
+Now, we will create the playbook to actually configure our router. Create a file `router-config.yml` in the `ansible/` directory. You could add the tasks to `site.yml`, but since the router is a different type of device, it makes sense to keep it separate.
+
+The playbook should contain the following tasks:
+
+- Set the IP address of the internal interface (in fact, Vagrant already did that, but we'll do it again for the sake of the exercise)
+- Add a description to both interfaces, label them `LAN` and `WAN` respectively.
+- Set the host name of the router
+- Enable NAT on the router
+- (Optional) Set a port forwarding rule that forwards HTTP/HTTPS traffic on the appropriate ports to the web server.
+- (Optional) Enable the firewall on the router. Only allow traffic that is initiated from the LAN to the WAN. Allow no direct traffic from the WAN to hosts on the LAN.
+
+Don't write all tasks at once! Implement a single change and execute the playbook with the command below. Check whether the change was applied correctly before moving on to the next task.
 
 ```console
 ansible-playbook -i inventory.yml router-config.yml 
 ```
 
-from the directory containing your inventory file and router config playbook. Verify that this works by pinging the IP address of the router from any of the VMs in your environment and from the physical system. Also check the router's configuration from the IOS console.
-
-Change the playbook so the Router hostname is set to `r001`. Execute the playbook and verify the result.
-
-Finally, make sure the running configuration is not lost after rebooting the router. Add a new task to the playbook, execute it and verify that you're still able to ping the router from e.g. your physical machine.
+Finally, make sure the running configuration is not lost after rebooting the router!
 
 ## 2.8. Integration: a working LAN
 
