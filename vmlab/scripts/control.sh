@@ -40,6 +40,7 @@ dnf install --assumeyes \
   python3-netaddr \
   python3-pip \
   python3-PyMySQL \
+  sshpass \
   tree \
   vim-enhanced
 

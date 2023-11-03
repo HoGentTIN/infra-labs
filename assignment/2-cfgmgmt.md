@@ -70,7 +70,7 @@ In order to communicate with managed nodes, you need to provide Ansible with a l
 servers:
   vars:
     ansible_user: vagrant
-    ansible_ssh_private_key_file: ../.vagrant/machines/srv100/virtualbox/private_key
+    ansible_ssh_password: vagrant
     ansible_become: true
   hosts:
     srv100:
@@ -495,6 +495,20 @@ Verify that the IP address is in the correct range (the one reserved for guests 
 This is probably the most scary part of the assignment. You will now destroy all VMs (`vagrant destroy`) and rebuild them from scratch (`vagrant up`). Before you do, make sure you have committed all changes to your playbooks and variable foles to your Git repository! Also, update the provisioning script of the control node so that it also installs the roles specified in `requirements.yml` and runs the `site.yml` playbook on all VMs. If the control node is the last one in the `vagrant-hosts.yml` file, all managed nodes already exist and the playbook should be able to run correctly. Run the playbook a second time to ensure it is idempotent.
 
 This is a good test to see whether your configuration is reproducible. If you did everything correctly, you should end up with a working LAN again!
+
+### 2.8.3. Possible extensions
+
+- **Use Vagrant SSH keys to log in to the VMs.** Vagrant generates private keys that can be used instead of a password for logging in. Conveniently, the private keys are visible inside the control node in the directory `/vagrant/.vagrant/machines/VMNAME/virtualbox/private_key`. Unfortunately, it's not possible to use these directly. If you would replace the line
+  
+  `ansible_ssh_password: vagrant`
+  
+  in the `inventory.yml`  file with
+  
+  `ansible_ssh_private_key_file: ../.vagrant/machines/srv100/virtualbox/private_key`
+
+  when your physical system is Windows, you will get an error that the permissions of the private key are insecure. A private key's permissions should be set to `0600`, but all files in the `/vagrant` directory (which is basically an NTFS volume mounted from the physical system) will be shown as `0777` without a possibility to change this.
+
+  However, you could rewrite the `control.sh` script so it copies the private keys of all managed nodes to the appropriate location on the control node and sets the correct permissions. You can then use the variable `ansible_ssh_private_key_file` in the inventory file to specify the location of each private key.
 
 ## Reflection
 
