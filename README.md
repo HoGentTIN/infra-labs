@@ -7,10 +7,14 @@ This repository contains the lab assignments for the course Infrastructure Autom
 
 The goal of these assignments is to get familiar with concepts like Infrastructure as Code, container virtualization, CI/CD, monitoring, etc.
 
-This repository contains some scaffolding code, based on [ansible-skeleton](https://github.com/bertvv/ansible-skeleton), a framework for quickly setting up an Ansible development and testing environment powered by [Vagrant](https://vagrantup.com).
+The assignments can be found in the [assignment](assignment/) directory.
 
-- [vmlab](vmlab/): a lab environment that, when you're finished, will consist of several VMs set up using [Ansible](https://www.ansible.com/).
+This repository also contains some scaffolding code for setting up virtual environments so students can get started quickly. They are based on [ansible-skeleton](https://github.com/bertvv/ansible-skeleton), a framework for quickly setting up an Ansible development and testing environment powered by [Vagrant](https://vagrantup.com).
+
 - [dockerlab](dockerlab/): sets up a VM to experiment with container virtualization.
+- [vmlab](vmlab/): a lab environment that, when you're finished, will consist of several VMs set up using [Ansible](https://www.ansible.com/).
+
+The code works on Windows, macOS and Linux. The setup is meant to be run against VirtualBox as virtualisation platform. VMWare workstation should also work (thanks to the contribution of a student), but this is not tested by the course lectureres.
 
 ## Author/License information
 

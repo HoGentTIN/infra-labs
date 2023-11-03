@@ -153,6 +153,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       shell_provisioners_always(node.vm, host)
       forwarded_ports(node.vm, host)
 
+      # VirtualBox-specific settings
       node.vm.provider :virtualbox do |vb|
         vb.memory = host['memory'] if host.key? 'memory'
         vb.cpus = host['cpus'] if host.key? 'cpus'
@@ -161,6 +162,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # WARNING: if the name of the current directory is the same as the
         # host name, this will fail.
         vb.customize ['modifyvm', :id, '--groups', PROJECT_NAME]
+      end
+
+      # VMware Desktop-specific settings
+      node.vm.provider :vmware_desktop do |vmw|
+        # vmw.gui = true
+      
+        # Must be a multiple of 4MB
+        vmw.vmx["memsize"] = host['memory'] if host.key? 'memory'
+        vmw.vmx["numvcpus"] = host['cpus'] if host.key? 'cpus'
       end
 
       # Ansible provisioning

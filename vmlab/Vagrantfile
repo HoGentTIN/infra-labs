@@ -94,6 +94,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       custom_synced_folders(node.vm, host)
       forwarded_ports(node.vm, host)
 
+      # VirtualBox-specific settings
       node.vm.provider :virtualbox do |vb|
         vb.memory = host['memory'] if host.key? 'memory'
         vb.cpus = host['cpus'] if host.key? 'cpus'
@@ -103,7 +104,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # host name, this will fail.
         vb.customize ['modifyvm', :id, '--groups', PROJECT_NAME]
       end
+
+      # VMware Desktop-specific settings
+      node.vm.provider :vmware_desktop do |vmw|
+        # vmw.gui = true
       
+        # Must be a multiple of 4MB
+        vmw.vmx["memsize"] = host['memory'] if host.key? 'memory'
+        vmw.vmx["numvcpus"] = host['cpus'] if host.key? 'cpus'
+      end
+
       # Run provisioning script for the VM, if it exists.
       provisioning_script = PROVISIONING_SCRIPT_DIR + host['name'] + '.sh'
       if File.exist?(provisioning_script)
