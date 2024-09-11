@@ -31,7 +31,7 @@ You will also need a GitHub repository with a sample application. Create a new G
     ```
 
 2. Copy the starter code from `cicd-sample-app` to some new directory outside this Git repository. Enter the copied directory and initialise it as a Git repository with `git init`. Commit all code (e.g. `git add .; git commit -m "Initial commit of sample application"`).
-3. On GitHub, create a new public repository and record the URL, probably something like `https://github.com/USER/cicd-sample-app/` (with USER your GitHub username).
+3. On GitHub, create a new **public** repository and record the URL, probably something like `https://github.com/USER/cicd-sample-app/` (with USER your GitHub username).
 4. Link your local repository with the one you created on GitHub: `git remote add origin git@github.com:USER/cicd-sample-app.git` (The GitHub page of your repository will show you the exact command needed for this).
 5. Push the locally committed code to GitHub: `git push -u origin main`. Take extra care on this command and the option main. If you receive an error, read the git error message carefully. Maybe your GitHub account is (still) configured to use master instead of main. 
 
@@ -79,9 +79,9 @@ You will also need a GitHub repository with a sample application. Create a new G
     - The branch to be built should be `*/main` instead of the default `*/master`
     - In the section "Build Steps", click "Add a build step" and select "Execute shell" from the dropdown list. enter `bash ./sample-app.sh`
     - Click "Save". You are redirected to the Jenkins dashboard
-3. The dashboard shows an overview of all build jobs. Click the job you just created and in the menu on the left, start a new build job.
-    - Hopefully, the build succeeded. Use the overview of build attempts to view the console output of the build process to. If the build process failed this is where you can find error messages that can help to determine the cause.
-4. Ensure the application is running by reloading the appropriate browser tab.
+3. The dashboard shows an overview of all build jobs. Click the job you just created and in the menu on the left, start a new build job (*"Build Now"*).
+    - Hopefully, the build succeeds. Use the overview of build attempts to view the console output of the build process to. If the build process failed this is where you can find error messages that can help to determine the cause.
+4. Ensure the sample application is running by reloading the appropriate browser tab.
 
 Take some time to realise what you did here, because it's actually quite cool! We launched Jenkins in a Docker container, and the result of the build job is another container that runs alongside it! The specific options when we launched the Jenkins container make sure that this is possible.
 
@@ -167,7 +167,7 @@ In this final step, we will make a change in the application, re-launch the buil
 
 ## Reflection
 
-This lab assignment was much less complex than a real-life build pipeline would be, but you were able to see how Jenkins kan be used to build, test *and* deploy an application automatically.
+This lab assignment was much less complex than a real-life build pipeline, but you were able to see how Jenkins can be used to automatically build, test *and* deploy an application.
 
 What would change in a real-life case:
 
