@@ -295,6 +295,14 @@ Next, add a new section for `srv001` to the `site.yml` file and assign the roles
 
 Create a file `ansible/host_vars/srv001.yml` for defining role variables specific for this host.
 
+**Tip:** when running the `site.yml` playbook against your environment, it will update the desired state of *all* hosts in the inventory. If you only want to apply the changes to a specific host, you can use the `--limit` option (or `-l` for short). For example, to only apply the changes to `srv001`, you can run:
+
+```console
+ansible-playbook -i inventory.yml --limit srv001 site.yml
+```
+
+This may save you a lot of time in the remainder of the assignment. You could also comment out code of the hosts that you're not currently working on.
+
 ### 2.5.2. Caching name server
 
 Let's now start configuring the new server as a caching nameserver without any authoritative zones. Define the necessary role variables (peruse the role documentation!) to:
