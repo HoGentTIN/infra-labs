@@ -94,9 +94,10 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+    comparisons:
+       networks: strict
     networks:
       - name: mgmt_net
-    purge_networks: true
     networks_cli_compatible: true
     network_mode: default
   tags: dockerlab
