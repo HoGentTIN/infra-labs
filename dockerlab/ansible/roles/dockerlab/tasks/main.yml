@@ -17,12 +17,6 @@
     update_cache: true
   tags: dockerlab
 
-- name: Ensure the necessary (pip) packages are installed
-  pip:
-    name: "{{ dockerlab_pip_packages }}"
-    state: present
-  tags: dockerlab
-
 - name: Ensure the Docker group exists
   group:
     name: docker
@@ -54,7 +48,7 @@
   with_items: "{{ dockerlab_services }}"
   tags: dockerlab
 
-- name: Enable some handy aliases for managing Docker
+- name: Enable some useful aliases for managing Docker
   copy:
     src: docker-aliases.sh
     dest: /etc/profile.d/docker-aliases.sh

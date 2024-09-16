@@ -4,21 +4,19 @@
 dockerlab_packages:
   - bash-completion
   - bats
-  - ctop
   - curl
   - dnsutils
-  - docker
+  - docker.io
+  - docker-clean
   - docker-compose
   - git
   - jq
   - mysql-client
+  - python3-docker
+  - python3-netaddr
   - python3-pip
   - silversearcher-ag
   - tree
-
-dockerlab_pip_packages:
-  - docker
-  - netaddr
   - yamllint
 
 dockerlab_services:
