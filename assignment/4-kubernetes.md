@@ -83,9 +83,9 @@ The `watch` command will repeat the `kubectl` command every second (`-n1`) and s
 
 ### 4.2.1. Hello world!
 
-- Create your first deployment following the instructions in the [Hello Minikube tutorial](https://kubernetes.io/docs/tutorials/hello-minikube/#create-a-deployment).
-- Creating a deployment is not sufficient to make an app available to users. You also [need to create a service](https://kubernetes.io/docs/tutorials/hello-minikube/#create-a-service).
-- Check that you can view the app in a webbrowser.
+- Follow the steps in the [Hello Minikube tutorial](https://kubernetes.io/docs/tutorials/hello-minikube/) to create a simple deployment and service and to learn to use the Kubernetes dashboard.
+- Next, follow the [Learn Kubernetes Basics](https://kubernetes.io/docs/tutorials/kubernetes-basics/) tutorial where you will learn to deploy a containerized application on a cluster, access it, scale it to multiple instances, and update it with a new version.
+- Check that you can view the discussed applications in a webbrowser, or by using `curl` from the command line.
 
 ### 4.2.2. Working with manifest files
 
@@ -93,9 +93,9 @@ Usually, you won't be deploying applications with commands like you did in the p
 
 In the directory [../kubernetes/4.2](../kubernetes/4.2), you will find examples of some basic manifest files:
 
-- [echo-deployment.yml](../kubernetes/4.2/echo-deployment.yml): describes a deployment for the echo app from the previous step
-- [echo-service.yml](../kubernetes/4.2/echo-service.yml): describes a service for the echo app
-- [echo-all.yml](../kubernetes/4.2/echo-all.yml): a file containing both the deployment and service definition.
+- [bootcamp-deployment.yml](../kubernetes/4.2/bootcamp-deployment.yml): describes a deployment for the bootcamp app from the previous step
+- [bootcamp-service.yml](../kubernetes/4.2/bootcamp-service.yml): describes a service for the echo app
+- [bootcamp-all.yml](../kubernetes/4.2/bootcamp-all.yml): a file containing both the deployment and service definition.
     - This Deployment also contains a ReplicaSet that ensures two pods are running at all times
 
 You will notice that in the last file, some lines only contain `---`. This is YAML syntax to mark the beginning of a new "document" (in YAML terminology). This way, you can combine the definitions of all Kubernetes objects that you want to create in a single YAML file.
@@ -107,7 +107,7 @@ $ kubectl apply -f echo-deployment.yml
 $ kubectl apply -f echo-service.yml
 ```
 
-This will first create the Deployment and launch the pods. The second command ensures that the app is available for users. When the Service is active, you should be able to view the application in a web browser with `minikube service echo-service`, or by surfing to `http://IP_ADDRESS:PORT` where `IP_ADDRESS` is the IP address of the node where the pod is running and `PORT` is the port number mentioned when you list the service with `kubectl get service`.
+This will first create the Deployment and launch the pods. The second command ensures that the app is available for users. When the Service is active, you should be able to view the application in a web browser with `minikube service bootcamp-service`, or by surfing to `http://IP_ADDRESS:PORT` where `IP_ADDRESS` is the IP address of the node where the pod is running and `PORT` is the port number mentioned when you list the service with `kubectl get service`.
 
 You can do the same thing in one go by combining the code of both files into a single file.
 
@@ -126,6 +126,8 @@ $ kubectl apply -f <manifest-file.yml>
 ```
 
 For example, increase the number of replicas of the echoserver app (currently two) in the manifest file `echo-all.yml`, and apply the change. Check whether this operation was successful and find out on which node each pod is running (which command can you use for this?). Try to send multiple requests to the service (e.g. curl in a for loop) and check whether all pods process requests by looking at the logs of each pod (with which command?).
+
+You can also try to update the image of the app to a newer version. In the image name `docker.io/jocatalin/kubernetes-bootcamp:v1`, change `v1` to `v2` and apply the change. Observe how the cluster performs a rolling update on the application and check afterwards (in the browser or using `curl`) whether the new version is running.
 
 **Optional:** If one of the nodes in the cluster becomes unavailable (e.g. `minikube node stop minikube-m03). What happens? Is the application still available? Are the pods still running? Is a pod automatically rescheduled to another node? What if you restart the node? Will the cluster "heal" itself completely or not?
 
@@ -197,6 +199,8 @@ Launch the pods by applying the manifest file.
 ## 4.4. Deploy a multi-tier web application
 
 Open the Kubernetes documentation site in a webbrowser and follow the tutorial [Deploying PHP Guestbook application with Redis](https://kubernetes.io/docs/tutorials/stateless-application/guestbook/). Keep lab notes!
+
+**Optionally,** you can also follow the tutorial [Example: Deploying WordPress and MySQL with Persistent Volumes](https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/).
 
 ## 4.5. Clean up
 
