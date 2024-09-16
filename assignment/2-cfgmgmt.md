@@ -26,7 +26,10 @@ A note on the naming convention used: server VMs with name starting with `srv0` 
 ## Acceptance criteria
 
 - You should be able to reconstruct the entire setup (except the VMs for the router and workstation) from scratch by executing the command `vagrant up`, without any manual configuration afterwards.
-- When connecting a workstation VM to the network, it should get correct IP settings and should be able to view the local website (using the hostname, not the IP address) and have internet access.
+- When connecting a workstation VM to the network, it should:
+    - get correct IP settings;
+    - be able to view the local website using the hostname, not the IP address (also verify that you have installed a custom SSL certificate);
+    - have internet access.
 - You should be able to ping the hosts in the network by host name (rather than IP address) from the workstation VM.
 
 ## 2.1. Set up the control node
@@ -270,7 +273,15 @@ After these steps, you should see the contents of the database when you open the
 
 ![PHP script showing database contents](img/4-website.png)
 
-### 2.4.4. Idempotency
+### 2.4.4. SSL certificate
+
+Nowadays, a webserver is not complete without supporting HTTPS. This means that the server should have an SSL certificate installed. The default installation of Apache already has a self-signed certificate, but in production use, you would install a certificate from a trusted certificate authority (CA). For this assignment, we will simulate the installation of an SSL certificate, but we'll create one that is self-signed.
+
+The creation of a certificate should not be automated, as it is a step that is performed only once. However, the installation of the certificate can be automated. The role `bertvv.httpd` supports the installation of a certificate. The role documentation explains how to do this.
+
+So, install the necessary tools to generate an SSL certificate, create it, and copy the generated files to the correct location in your Ansible project tree. Then modify the playbook or `hosts_vars` to install the certificate. Finally, verify that the certificate is installed correctly by opening the website with HTTPS.
+
+### 2.4.5. Idempotency
 
 If you run the playbook again, you will notice that the database is re-initialised. Unfortunately, the `mysql_db` module is not *idempotent* when you use the import option. This means that the module will always execute the import script, even if the database already exists. This is not what we want! We only want to execute the import script when we first copy the initialisation script to the server.
 
