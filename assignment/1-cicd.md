@@ -66,12 +66,12 @@ You will also need a GitHub repository with a sample application. Create a new G
 ## 1.4 Configure Jenkins
 
 1. Open a browser tab and point it to <http://192.168.56.20:8080/>. You are asked to enter the administrator password that you recorded in the previous step. Next, Jenkins will ask which plugins you want to have installed. Choose to install the recommended plugins. After this, Jenkins will initialize, which takes some time. You can follow the progress on the web page.
-2. When the initialization process finishes, you are redirected to a page that asks you to create an admin user. For now, you can skip this a continued as admin by following the link at the bottom.
+2. When the initialization process finishes, you are redirected to a page that asks you to create an admin user. For now, you can skip this and continue as admin by following the link at the bottom.
 3. On the next page, titled "Instance Configuration", just click "Save and Finish" and then "Start using Jenkins".
 
 ## 1.5 Use Jenkins to build your application
 
-1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *BuildSampleApp*. Select a "free style project" as job type.
+1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *BuildSampleApp*. Select a "Freestyle project" as job type.
 2. The following page allows you to configure the new job. There are a lot of options, so you may be overwhelmed at first.
     - Optionally, enter a description
     - In the section "Source Code Management", select the radio button "Git" and enter the https-URL to your GitHub project, `https://github.com/USER/cicd-sample-app.git`
@@ -101,7 +101,7 @@ Before you begin, you need to know the IP address of both the `sampleapp` and `j
 
 Remark that 172.17.0.1 is the IP address of the Docker host, i.e. your `dockerlab` VM. Our acceptance test will consist of running the curl command from the Jenkins server, which will have a different IP address.
 
-1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *TestSampleApp*. Select a "free style project" as job type. Optionally, add a description.
+1. On the Jenkins dashboard, click "Create a new job". Enter a suitable name, e.g. *TestSampleApp*. Select a "Free  style project" as job type. Optionally, add a description.
 2. Under section "Build Triggers", select checkbox "Build after other projects are built". In the text field "Projects to watch", enter the name of the build job.
 3. Under section "Build steps", add a build step of type "Execute shell". Enter the following code:
 
@@ -126,7 +126,7 @@ The build process in a real-life application is usually much more complex. A ful
 
 In the next step, we will set up a complete build pipeline that, if the build and test steps succeed, will launch your application as a Docker container.
 
-1. Go to the Jenkins pipeline and create a new item. Enter an appropriate name (e.g. SampleAppPipeline) and select "Pipeline" as job type. Press OK.
+1. Go to the Jenkins dashboard and create a new item. Enter an appropriate name (e.g. SampleAppPipeline) and select "Pipeline" as job type. Press OK.
 2. Optionally, enter a description and in the Pipeline section, enter the following code:
 
     ```text
@@ -148,7 +148,7 @@ In the next step, we will set up a complete build pipeline that, if the build an
 
     This build pipeline consists of 3 stages:
 
-    - The currently running container is stopped and removed
+    - The container currently running is stopped and removed
     - The build job is launched
     - The acceptance job is launched
 
