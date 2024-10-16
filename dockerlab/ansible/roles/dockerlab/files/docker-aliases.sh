@@ -1,3 +1,4 @@
+#! /bin/bash --
 # Bash aliases for managing Docker
 
 # Colors
@@ -16,5 +17,4 @@ alias dS='docker exec --interactive --tty $(docker ps --latest --quiet) env TERM
 # "docker halt"
 alias dh='docker stop'
 # Print the IP address of the latest Docker container
-alias dip='docker inspect  --format="{{ .NetworkSettings.IPAddress }}" $(docker ps --latest --quiet)'
-
+alias dip='docker inspect --format="{{ .NetworkSettings.Networks.mgmt_net.IPAddress }}" $(docker ps --latest --quiet)'
