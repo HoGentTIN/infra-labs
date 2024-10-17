@@ -8,7 +8,7 @@ The goal of this assignment is to set up a complete local network (domain name `
 | r001              | gw     | 172.16.255.254 | Router               |
 | srv001            | ns,ns1 | 172.16.128.1   | Primary DNS          |
 | srv002            | ns2    | 172.16.128.2   | Secondary DNS        |
-| srv003            | dhcp   | 172.16.128.2   | DHCP server          |
+| srv003            | dhcp   | 172.16.128.3   | DHCP server          |
 | srv004            |        | 172.16.128.4   | Monitoring server    |
 | srv100            | www    | 172.16.128.100 | Webserver            |
 | ws0001            |        | (DHCP)         | workstation          |
@@ -590,6 +590,6 @@ System administrators use two main approaches when they need to repeatedly set u
 
 The other approach is what you did in this lab assignment: use a **configuration management system**. This approach implies that the system administrator will never perform manual changes on a production system. If changes must be applied, the description of the desired state is changed and the playbook is re-applied. **Idempotence** guarantees that only the necessary changes are performed. The system can remain in production, often with no/little downtime.
 
-Both approaches (golden image vs config management) have their place, and a system administrator will choose between them as appropriate for their specific situation. You can even combine both approaches, e.g. starting with Packer to create a Vagrant base box (= golden image) and then then use Ansible to install and configure the necessary software.
+Both approaches (golden image and config management) have their place, a system administrator will choose between them as appropriate for their specific situation. You can even combine both approaches, e.g. starting with Packer to create a Vagrant base box (= golden image) and then use Ansible to install and configure the necessary software.
 
 The end goal is the same in all cases: the setup of a server must be reproducible and automated as much as possible.
