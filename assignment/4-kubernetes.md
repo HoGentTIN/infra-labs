@@ -46,7 +46,7 @@ If you think you will use Kubernetes professionally, or if you want to gain a mu
     - `minikube`, a tool to set up a local Kubernetes environment. It's probably best to [use VirtualBox as the driver](https://minikube.sigs.k8s.io/docs/drivers/)
 
         ```console
-        $ minikube config set driver virtualbox
+        minikube config set driver virtualbox
         ```
 
     - `kubectl`, a command-line tool to run commands against Kubernetes clusters
@@ -55,8 +55,8 @@ If you think you will use Kubernetes professionally, or if you want to gain a mu
     - Enable the appropriate Minikube plugins:
 
         ```console
-        $ minikube addons enable metrics-server
-        $ minikube addons enable dashboard
+        minikube addons enable metrics-server
+        minikube addons enable dashboard
         ```
 
     - Start the Dashboard with `minikube dashboard`
@@ -74,7 +74,7 @@ Before you begin, a quick tip: the command `kubectl get all` is very useful to s
 You can get an near real-time view on what happens on your cluster by issuing the following command in a separate Bash terminal:
 
 ```console
-$ watch -n1 kubectl get all
+watch -n1 kubectl get all
 ```
 
 Add option `-o wide` if you want to see on which node each
@@ -103,8 +103,8 @@ You will notice that in the last file, some lines only contain `---`. This is YA
 Let's deploy the application using the separate files first. Open a terminal in directory `4.2/` and follow the instructions below. Be sure to check the result after each command, or use the trick with the `watch` command introduced previously.
 
 ```console
-$ kubectl apply -f echo-deployment.yml
-$ kubectl apply -f echo-service.yml
+kubectl apply -f echo-deployment.yml
+kubectl apply -f echo-service.yml
 ```
 
 This will first create the Deployment and launch the pods. The second command ensures that the app is available for users. When the Service is active, you should be able to view the application in a web browser with `minikube service bootcamp-service`, or by surfing to `http://IP_ADDRESS:PORT` where `IP_ADDRESS` is the IP address of the node where the pod is running and `PORT` is the port number mentioned when you list the service with `kubectl get service`.
@@ -112,7 +112,7 @@ This will first create the Deployment and launch the pods. The second command en
 You can do the same thing in one go by combining the code of both files into a single file.
 
 ```console
-$ kubectl apply -f echo-all.yml
+kubectl apply -f echo-all.yml
 ```
 
 Remark that this file is not an exact copy/paste of the previous ones. Indeed, each object should be given a name, and we chose different names for both deployments. Consequently, at this time, two instances of the same app are running at the same time.
@@ -122,7 +122,7 @@ Check all components that are currently running, try to access both instances of
 If you want to make a change to an existing Kubernetes object, edit the manifest file and run the command:
 
 ```console
-$ kubectl apply -f <manifest-file.yml>
+kubectl apply -f <manifest-file.yml>
 ```
 
 For example, increase the number of replicas of the echoserver app (currently two) in the manifest file `echo-all.yml`, and apply the change. Check whether this operation was successful and find out on which node each pod is running (which command can you use for this?). Try to send multiple requests to the service (e.g. curl in a for loop) and check whether all pods process requests by looking at the logs of each pod (with which command?).
