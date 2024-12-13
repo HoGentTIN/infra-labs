@@ -19,7 +19,7 @@ In this lab assignment, you will learn the basics on how to set up a build pipel
 
 ## 1.1 Set up the lab environment
 
-For this lab assignment, we'll be using the `dockerlab` environment. Start the `dockerlab` VM and log in with `vagrant ssh`. This VM is an Ubuntu 20.04 system with Docker installed. A container will already be running (check this!) with Portainer, a webinterface to manage containers. It can be accessed on <http://192.168.56.20:9000/>. You will be asked to create a password for the admin user. Portainer is not part of this assignment, but you can use it to inspect the running containers.
+For this lab assignment, we'll be using the `dockerlab` environment. Start the `dockerlab` VM and log in with `vagrant ssh`. This VM is an Ubuntu 24.04 system with Docker installed. A container will already be running (check this!) with Portainer, a webinterface to manage containers. It can be accessed on <http://192.168.56.20:9000/>. You will be asked to create a password for the admin user. Portainer is not part of this assignment, but you can use it to inspect the running containers.
 
 You will also need a GitHub repository with a sample application. Create a new Git repository (this can be on your physical system, where Git and access to GitHub is already configured). Some starter code is provided in directory [cicd-sample-app](../dockerlab/cicd-sample-app/).
 
