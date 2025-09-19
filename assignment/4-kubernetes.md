@@ -13,7 +13,7 @@ The goal of this assignment is to become familiar with [Kubernetes](https://kube
     - Organising applications: Labels, Selectors
 - Deploying a multi-tier application on a Kubernetes cluster
 
-## Assessment criteria
+## Assessment criteria (M4)
 
 To meet the standard, show that the following criteria are met:
 

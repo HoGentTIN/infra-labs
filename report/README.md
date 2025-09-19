@@ -8,15 +8,15 @@ Remark that the table of contents above doesn't work out of the box, as you have
 
 **Keep a cheat sheet with all commands you're using regularly.** This will help you when you can't remember a particular command during a demo, or when you're working on your assignments.
 
-## Acceptance criteria for lab reports and demonstrations
+## Assessment criteria for lab reports and demonstrations
 
-Lab reports (R1)
+### Lab reports (R1)
 
 - [ ] You wrote a detailed lab report for each assignment, with console transcripts and screenshots of the results
 - [ ] For each assignment, you compiled a cheat sheet with the most important commands you need to remember
 - [ ] You wrote a critical reflection on the use of AI tools in this course
 
-Demos and interview (R2)
+### Demos and interview (R2)
 
 - [ ] You demonstrated M1 (CI/CD) and M4 (k8s) during the semester (W1 – W13).
 - [ ] You demonstrated all labs either before the end of the semester (W13), or during the exam period.
@@ -25,7 +25,7 @@ Demos and interview (R2)
     - Only showing a lab report is not sufficient!
 - [ ] You can perform specific actions on the lab setup as requested.
     - You may use your cheat sheet or lab reports to look up commands or procedures.
-
+    - At this time, typing the lecturer's questions in an LLM and reading out the answer is admitting you have an insufficient understanding of the subject matter and that you are too dependent on AI-tools to function effectively as a system engineer.
 
 ## Formatting Tips
 

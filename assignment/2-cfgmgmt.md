@@ -23,7 +23,7 @@ A note on the naming convention used: server VMs with name starting with `srv0` 
 - You can automate the setup of network services with a configuration management system (Ansible)
 - You can install and configure reproducible virtual environments (Infrastructure as Code) with suitable tools for the automation of the entire lifecycle of a VM
 
-## Assessment criteria
+## Assessment criteria (M2)
 
 To meet the standard, show that the following criteria are met:
 

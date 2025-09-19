@@ -9,7 +9,7 @@ In this assignment, you will set up a server that allows you to monitor the enti
 - Monitor services
 - Setting up a monitoring dashboard with Grafana
 
-## Assessment criteria
+## Assessment criteria (M3)
 
 To meet the standard, show that the following criteria are met:
 

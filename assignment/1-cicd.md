@@ -8,7 +8,7 @@ In this lab assignment, you will learn the basics on how to set up a build pipel
 - Creating simple jobs and build pipelines
 - Running the pipeline to build and test an application, and to deploy changes in the application
 
-## Assessment criteria
+## Assessment criteria (M1)
 
 To meet the standard, show that the following criteria are met:
 
