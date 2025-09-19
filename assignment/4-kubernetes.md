@@ -13,17 +13,22 @@ The goal of this assignment is to become familiar with [Kubernetes](https://kube
     - Organising applications: Labels, Selectors
 - Deploying a multi-tier application on a Kubernetes cluster
 
-## Acceptance criteria
+## Assessment criteria
 
-- Demonstrate that your Kubernetes cluster is running and that you are able to manage it:
+To meet the standard, show that the following criteria are met:
+
+- [ ] Demonstrate that your Kubernetes cluster is running and that you are able to manage it:
     - Open the dashboard to show what's running on the cluster: nodes, pods, services, deployments, etc.
     - Also show these from the command line (using `kubectl`)
-- Demonstrate the applications that are running on the cluster:
+- [ ] Demonstrate the applications that are running on the cluster:
     - Show them in the web browser
     - From the command line, show which resources are used by each application (Pods, Deployments, Services, etc.)
-- Show an example of filtering by label and an operation on the filtered resources (e.g. delete all resources with a certain label)
-- Scale the echo-all deployment to 5 replica's using the manifest file
-- Show your lab notes and cheat sheet with useful commands
+- [ ] Show an example of filtering by label and an operation on the filtered resources (e.g. delete all resources with a certain label)
+- [ ] Scale the echo-all deployment to 5 replica's using the manifest file
+- [ ] Demonstrate that you understand how your setup works beyond copying the assignment instructions to an LLM and pasting the results to the terminal or your lab report
+- [ ] Show your lab report and cheat sheet! It should contain screenshots of consecutive steps and console output of commands you used.
+
+In order to exceed expectations, implement one or more of the suggested extensions given throughout this assignment, or come up with your own.
 
 ## Additional resources
 
@@ -60,10 +65,15 @@ If you think you will use Kubernetes professionally, or if you want to gain a mu
         ```
 
     - Start the Dashboard with `minikube dashboard`
-- **Optionally,** issue the command `minikube node add` twice to spin up two extra nodes so you have an actual cluster with a control plane node and two workers.
+
+Possible extensions:
+
+- Issue the command `minikube node add` twice to spin up two extra nodes so you have an actual cluster with a control plane node and two workers.
     - By default, Minikube runs a single Kubernetes (control plane) node. For the purpose of this lab assignment, that's sufficient, but you will get a better feel of how a multi-node cluster works in a multi-node environment (control plane + worker nodes).
     - Remark that there's a command that immediately starts multiple nodes: `minikube start --nodes 3`. However, this command sometimes hangs during execution. Starting nodes individually is more reliable.
     - Also remark that when you're running a multi-node cluster, Minikube doesn't handle LoadBalancer access (which is the standard way to expose an application to the internet on a production cluster) very well. If you want to access a web application running on your cluster, you will probably need to enter the IP address of the node that actually runs the application Pod.
+- Run another driver than VirtualBox, e.g. Docker or KVM2. See the [Minikube drivers documentation](https://minikube.sigs.k8s.io/docs/drivers/) for more information.
+- Use an alternative Kubernetes distribution for local use, e.g. [k3s](https://k3s.io/) or [kind](https://kind.sigs.k8s.io/).
 
 ## 4.2. Basic operation
 
@@ -129,7 +139,9 @@ For example, increase the number of replicas of the echoserver app (currently tw
 
 You can also try to update the image of the app to a newer version. In the image name `docker.io/jocatalin/kubernetes-bootcamp:v1`, change `v1` to `v2` and apply the change. Observe how the cluster performs a rolling update on the application and check afterwards (in the browser or using `curl`) whether the new version is running.
 
-**Optional:** If one of the nodes in the cluster becomes unavailable (e.g. `minikube node stop minikube-m03). What happens? Is the application still available? Are the pods still running? Is a pod automatically rescheduled to another node? What if you restart the node? Will the cluster "heal" itself completely or not?
+Possible extensions:
+
+- If one of the nodes in the cluster becomes unavailable (e.g. `minikube node stop minikube-m03). What happens? Is the application still available? Are the pods still running? Is a pod automatically rescheduled to another node? What if you restart the node? Will the cluster "heal" itself completely or not?
 
 ## 4.3. Labels and selectors
 
@@ -200,7 +212,10 @@ Launch the pods by applying the manifest file.
 
 Open the Kubernetes documentation site in a webbrowser and follow the tutorial [Deploying PHP Guestbook application with Redis](https://kubernetes.io/docs/tutorials/stateless-application/guestbook/). Keep lab notes!
 
-**Optionally,** you can also follow the tutorial [Example: Deploying WordPress and MySQL with Persistent Volumes](https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/).
+Possible extensions:
+
+- You can also follow the tutorial [Example: Deploying WordPress and MySQL with Persistent Volumes](https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/).
+- Use Helm to deploy a multi-tier application
 
 ## 4.5. Clean up
 

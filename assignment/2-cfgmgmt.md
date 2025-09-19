@@ -23,14 +23,20 @@ A note on the naming convention used: server VMs with name starting with `srv0` 
 - You can automate the setup of network services with a configuration management system (Ansible)
 - You can install and configure reproducible virtual environments (Infrastructure as Code) with suitable tools for the automation of the entire lifecycle of a VM
 
-## Acceptance criteria
+## Assessment criteria
 
-- You should be able to reconstruct the entire setup (except the VMs for the router and workstation) from scratch by executing the command `vagrant up`, without any manual configuration afterwards.
-- When connecting a workstation VM to the network, it should:
-    - get correct IP settings;
-    - be able to view the local website using the hostname, not the IP address (also verify that you have installed a custom SSL certificate);
-    - have internet access.
-- You should be able to ping the hosts in the network by host name (rather than IP address) from the workstation VM.
+To meet the standard, show that the following criteria are met:
+
+- [ ] Show that you can reconstruct the entire setup (except the VMs for the router and workstation) from scratch by executing the command `vagrant up`, without any manual configuration afterwards.
+- [ ] Show that when connecting a workstation VM to the network, it:
+    - gets correct IP settings;
+    - can access the local website in a webbrowser using the hostname, not the IP address (also verify that you have installed a custom SSL certificate);
+    - has internet access.
+- [ ] Show that you can ping the hosts in the network by host name (rather than IP address) from the workstation VM.
+- [ ] Demonstrate that you understand how your setup works beyond copying the assignment instructions to an LLM and pasting the results to the terminal or your lab report
+- [ ] Show your lab report and cheat sheet! It should contain screenshots of consecutive steps and console output of commands you used.
+
+In order to exceed expectations, implement one or more of the suggested extensions given throughout this assignment, or come up with your own.
 
 ## 2.1. Set up the control node
 
@@ -67,8 +73,17 @@ Add a new VM named `srv100` (which will become our web server) to the Vagrant en
 - name: srv100
   ip: 172.16.128.100
   netmask: 255.255.0.0
-  box: bento/almalinux-9
+  box: bento/almalinux-10
 ```
+
+If your laptop has limited resources (CPU, RAM), you can limit the number of CPUs and the amount of RAM assigned to the VM by adding something like:
+
+```yaml
+  cpus: 1      # only use 1 CPU core
+  memory: 256  # RAM in MB
+```
+
+Some VMs/services need more resources than others, so increase these values if necessary.
 
 Your control node should always be the last VM defined in `vagrant-hosts.yml`. The reason will become apparent at the final stage of this assignment.
 
@@ -300,6 +315,12 @@ There are two ways to solve this problem:
 
 Implement either method so your playbook becomes idempotent.
 
+## 2.4.6. Possible extensions
+
+- Host a second web application on the same server using a different domain name (e.g. `intranet.infra.lan`). This means that you should create a new virtual host in Apache, with its own document root, SSL certificate, etc. You can use the same database server, but you should create a new database and a new database user for this application. You can choose the application, and the platform it was built upon (PHP, Python, NodeJS, ...). You can use an existing application (e.g. a CMS like WordPress, Drupal, phpMyAdmin, ...).
+- Set up the database on a separate VM and have the web application(s) connect to this database server.
+- Use PostGreSQL instead of MariaDB/MySQL as the database server.
+
 ## 2.5. DNS
 
 In the next part, you will use the Ansible role `bertvv.bind` to configure a **new** server `srv001` as a DNS server. The role's primarily purpose is to set up an authoritative-only name server that only replies to queries within its own domain. However, it is possible to configure it as a caching name server that either forwards requests to another DNS server, or replies to queries that have been cached.
@@ -383,6 +404,12 @@ When the service is running, check:
 
 After this experiment, because of the manual changes, your DNS VMs have "drifted" from their desired state. Revert the changes by running the site playbook again. Verify that the name servers no longer respond to queries for the host `srv101`.
 
+## 2.5.5. Possible extensions
+
+- Implement a different DNS service that is suitable for production use, e.g. PowerDNS, Knot DNS, NSD, ... (but not Dnsmasq)
+- Separate the caching and authoritative name server roles on different VMs. You can use BIND or Dnsmasq for the caching server.
+- Configure DNSSEC for the domain `infra.lan`
+
 ## 2.6. DHCP
 
 In a local network, workstations usually get correct IP settings from a DHCP server. In this part of the lab assignment, you will use the Ansible role `bertvv.dhcp` to configure `srv003` as a DHCP server.
@@ -405,6 +432,11 @@ Some remarks:
 - A subnet declaration is only needed for the dynamic IP addresses. The reserved IP addresses are configured with host declarations.
 - Make sure that the address range specified in your subnet declaration doesn't overlap with the reserved IP addresses!
 - A subnet declaration's network IP should match the network part of the DHCP server's IP address, otherwise the daemon will not start.
+
+## 2.6.2. Possible extensions
+
+- Install KEA DHCP server instead of ISC DHCP
+- If you implemented Dnsmasq as a caching DNS server, you can also use it as a DHCP server.
 
 ## 2.7. Managing a router with Ansible (Cisco version)
 
@@ -540,7 +572,8 @@ Finally, make sure the running configuration is not lost after rebooting the rou
 
 ### 2.7.5. Possible extensions
 
-- Configure the firewall on the router, implement a suitable security policy for the network.
+- Configure the firewall on the router, implement a suitable security policy for the network. Which hosts and services should be reachable from the outside world? Which shouldn't?
+- Try out other configuration settings that make sense for this setup, e.g. setting up NAT, configuring routing protocols, ...
 
 ## 2.8. Integration: a working LAN
 

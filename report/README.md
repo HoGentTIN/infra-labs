@@ -4,9 +4,28 @@ This directory contains all your lab reports, written in [Markdown](https://guid
 
 **Writing correct Markdown is quite easy, so please take some effort to learn it!** A good text editor like VSCode has support for writing Markdown (e.g. HTML preview, code style checking, cleanup of tables, etc.). Make use of this, so you're certain that when you push your reports to GitHub, they are formatted correctly.
 
-Remark that the table of contents above doesn't work out of the box, as you haven't written your reports yet. Copy the file `report-template.md` to a new file, e.g. `1-report-containers.md` for the first lab assignment.
+Remark that the table of contents above doesn't work out of the box, as you haven't written your reports yet. Copy the file `report-template.md` to a new file, e.g. `1-report-cicd.md` for the first lab assignment.
 
 **Keep a cheat sheet with all commands you're using regularly.** This will help you when you can't remember a particular command during a demo, or when you're working on your assignments.
+
+## Acceptance criteria for lab reports and demonstrations
+
+Lab reports (R1)
+
+- [ ] You wrote a detailed lab report for each assignment, with console transcripts and screenshots of the results
+- [ ] For each assignment, you compiled a cheat sheet with the most important commands you need to remember
+- [ ] You wrote a critical reflection on the use of AI tools in this course
+
+Demos and interview (R2)
+
+- [ ] You demonstrated M1 (CI/CD) and M4 (k8s) during the semester (W1 – W13).
+- [ ] You demonstrated all labs either before the end of the semester (W13), or during the exam period.
+- [ ] You are able to respond to follow-up questions about the assignments and show insight in the subject matter.
+- [ ] The lab setup is working correctly (i.e. VMs are running, services are available, etc.).
+    - Only showing a lab report is not sufficient!
+- [ ] You can perform specific actions on the lab setup as requested.
+    - You may use your cheat sheet or lab reports to look up commands or procedures.
+
 
 ## Formatting Tips
 
@@ -42,7 +61,7 @@ You can insert images with the following code:
 ![alt text](path/to/image.jpg)
 ```
 
-Replace "alt text" with a description of the image (an image caption, in fact). The path to the image itself is specified between the parentheses `()`. Remark that you can use relative paths. For your convenience, create a subdirectory named e.g. `img` to store all screenshots and images you want to include in your report. A good text editor will help you with completing the path to the image. E.g. in VS Code, start typing the name of your image directory and press `Ctrl+Space`. It will show a dropdown list with overview of all images, including a preview.
+Replace "alt text" with a description of the image (an image caption, in fact). The path to the image itself is specified between the parentheses `()`. Remark that you should use *relative* paths here. For your convenience, create a subdirectory named e.g. `img` to store all screenshots and images you want to include in your report. A good text editor will help you with completing the path to the image. E.g. in VS Code, start typing the name of your image directory and press `Ctrl+Space`. It will show a dropdown list with overview of all images, including a preview.
 
 ## Formatting tables
 

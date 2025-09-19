@@ -9,17 +9,28 @@ In this assignment, you will set up a server that allows you to monitor the enti
 - Monitor services
 - Setting up a monitoring dashboard with Grafana
 
-## Acceptance criteria
+## Assessment criteria
 
-- Demonstrate the working Prometheus server:
+To meet the standard, show that the following criteria are met:
+
+- [ ] Show that the Prometheus server works:
     - Show targets in the webinterface
     - Run a query for a metric
-- Show the Grafana dashboard you created
-- Demonstrate any extensions to the assignment that you have implemented
-- Your lab report is detailed and complete
+- [ ] Show the Grafana dashboard you created
+- [ ] Demonstrate that you understand how your setup works beyond copying the assignment instructions to an LLM and pasting the results to the terminal or your lab report
+- [ ] Show your lab report and cheat sheet! It should contain screenshots of consecutive steps and console output of commands you used.
+
+In order to exceed expectations, implement one or more of the suggested extensions given below, or come up with your own.
+
+- Automate the setup of the Grafana dashboard, so that it is automatically created when you run the playbook.
+- Make the gathering of metrics more secure with e.g. stricter firewall rules (only the monitoring server can access the Node Exporter port), TLS/SSL, authentication, ...
+- Also install `mysqld_exporter` on `srv100`. This will allow you to monitor the MariaDB server on this VM. The role is also available in the Prometheus collection. It requires a MariaDB user with the necessary permissions to access the metrics, so you should ensure that this user is also created.
+- Set up instrumentation for the DNS servers using `bind_exporter`. This is not available in the Prometheus collection, so look for a suitable role on Ansible Galaxy.
+- Set up instrumentation for the Apache web server and/or the application(s) running on the server. This is also not readily available as a role, so look into how you can install and configure this with Ansible.
+- Implement log aggregation with Grafana Loki and integrate this in your Grafana dashboard.
+- Set up alerting with Prometheus Alertmanager.
 
 ## 3.1. Install prerequisites
-
 
 The necessary roles are available on Ansible Galaxy in the [Prometheus collection](https://galaxy.ansible.com/ui/repo/published/prometheus/prometheus/). Add this collection to your `requirements.yml` file and ensure it gets installed.
 
@@ -72,10 +83,3 @@ Install the [Ansible collection for Grafana](https://galaxy.ansible.com/ui/repo/
 > Related issue: <https://github.com/grafana/grafana/issues/55962>
 
 If an existing Grafana Dashboard can be reused for your setup, this can be automated through one of the role variables. If not, it's okay if the dashboard was created manually and cannot be automatically reproduced after a `vagrant destroy; vagrant up`. In that case, it's important to document the process thoroughly in your lab report.
-
-## 3.5. Extensions
-
-- Make the gathering of metrics more secure with e.g. stricter firewall rules (only the monitoring server can access the Node Exporter port), TLS/SSL, authentication, ...
-- Also install `mysqld_exporter` on `srv100`. This will allow you to monitor the MariaDB server on this VM. The role is also available in the Prometheus collection. It requires a MariaDB user with the necessary permissions to access the metrics, so you should ensure that this user is also created.
-- Set up instrumentation for the DNS servers using `bind_exporter`. This is not available in the Prometheus collection, so look for a suitable role on Ansible Galaxy.
-- Set up instrumentation for the Apache web server. This is also not readily available as a role, so look into how you can install and configure this with Ansible.

@@ -94,6 +94,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       custom_synced_folders(node.vm, host)
       forwarded_ports(node.vm, host)
 
+      # Use custom login name/password if specified
+      node.ssh.username = host['ssh_username'] if host.key? 'ssh_username'
+      node.ssh.password = host['ssh_password'] if host.key? 'ssh_password'
+
       # VirtualBox-specific settings
       node.vm.provider :virtualbox do |vb|
         vb.memory = host['memory'] if host.key? 'memory'

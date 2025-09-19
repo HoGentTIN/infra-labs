@@ -8,14 +8,23 @@ In this lab assignment, you will learn the basics on how to set up a build pipel
 - Creating simple jobs and build pipelines
 - Running the pipeline to build and test an application, and to deploy changes in the application
 
-## Acceptance criteria
+## Assessment criteria
 
-- Show that you created a GitHub repository for the sample application
-- Show that the application is running by opening it in a web browser
-- Show the overview of jobs in the Jenkins dashboard
-- Make a change to the sample application, commit and push
-- Launch the build pipeline and show the change to the application in the browser
-- Show your lab report and cheat sheet! It should contain screenshots of consecutive steps and console output of commands you used.
+To meet the standard, show that the following criteria are met:
+
+- [ ] Show that you created a GitHub repository for the sample application
+- [ ] Show that the application is running by opening it in a web browser
+- [ ] Show the overview of jobs in the Jenkins dashboard
+- [ ] Make a change to the sample application, commit and push
+- [ ] Launch the build pipeline and show the change to the application in the browser
+- [ ] Demonstrate that you understand how your setup works beyond copying the assignment instructions to an LLM and pasting the results to the terminal or your lab report
+- [ ] Show your lab report and cheat sheet! It should contain screenshots of consecutive steps and console output of commands you used.
+
+In order to exceed expectations, implement one or more of the suggested extensions given below, or come up with your own.
+
+- Create a build pipeline for a larger application, e.g. this [todo list app](https://docs.microsoft.com/en-us/visualstudio/docker/tutorials/your-application), 
+- Upgrade your pipeline to a *Continuous Delivery/Deployment* pipeline. Try to configure the task(s) in such a way that a push to main would result in automatically deploying a new version of the static website. In other words no interaction on the jenkins server should be needed anymore to trigger the tasks/jobs.
+- Make the Jenkins configuration persistent, i.e. ensure that when you perform a `vagrant destroy` and `vagrant up`, the entire setup, including all the pipelines in the assignment are reproduced. (This implies that you first learned how to use Ansible in the second assignment!)
 
 ## 1.1 Set up the lab environment
 
@@ -185,7 +194,3 @@ What would change in a real-life case:
 
 And we haven't even discussed any necessary changes to a database schema when new code is deployed!
 
-## Possible extensions
-
-- Create a build pipeline for a larger application, e.g. this [todo list app](https://docs.microsoft.com/en-us/visualstudio/docker/tutorials/your-application)
-- Upgrade your pipeline to a *Continuous Delivery/Deployment* pipeline. Try to configure the task(s) in such a way that a push to main would result in automatically deploying a new version of the static website. In other words no interaction on the jenkins server should be needed anymore to trigger the tasks/jobs.
