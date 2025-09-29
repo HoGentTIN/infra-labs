@@ -22,6 +22,9 @@ test/bats/
 # (user.role notation)
 */ansible/roles/*.*
 
+# Ansible settings
+.ansible/
+
 # Ansible Retry-files
 *.retry
 
