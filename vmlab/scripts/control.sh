@@ -12,9 +12,11 @@ set -o pipefail  # don't mask errors in piped commands
 #--------- Variables ----------------------------------------------------------
 
 # Location of provisioning scripts and files
-export readonly PROVISIONING_SCRIPTS="/vagrant/scripts/"
+readonly PROVISIONING_SCRIPTS="/vagrant/scripts/"
 # Location of files to be copied to this server
-export readonly PROVISIONING_FILES="${PROVISIONING_SCRIPTS}/${HOSTNAME}"
+readonly PROVISIONING_FILES="${PROVISIONING_SCRIPTS}/${HOSTNAME}"
+
+export PROVISIONING_FILES PROVISIONING_SCRIPTS
 
 #---------- Load utility functions --------------------------------------------
 
