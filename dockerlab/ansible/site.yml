@@ -1,5 +1,6 @@
 # site.yml
 ---
-- hosts: all
+- name: "Apply dockerlab role"
+  hosts: dockerlab
   roles:
     - dockerlab
