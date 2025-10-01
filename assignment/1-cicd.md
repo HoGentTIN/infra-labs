@@ -165,7 +165,7 @@ In the next step, we will set up a complete build pipeline that, if the build an
 3. Next, start a build. Jenkins will show you how each phase of the pipeline progresses. Check the console output of each phase.
 4. If the run succeeds, the application should be running. Verify by opening it in a web browser.
 
-## 1.7 Use a Jenkinsfile
+## 1.8 Use a Jenkinsfile
 
 You can automate the configuration of the build pipeline by adding a `Jenkinsfile` to the root of the application Git repository. For this case, you can use the code for the the pipeline definition in the previous step. Add the jenkinsfile to the root of the Git repository, remove the pipeline from the Jenkins dashboard, create a new pipeline for the Git repository and launch it. The pipeline should run as before!
 
